@@ -1,0 +1,223 @@
+.map-wrapper {
+  position: relative;
+  width: calc(100% - 60px);
+  max-width: calc(100% - 60px);
+  height: calc(100vh - 100px);
+  margin: 0 30px 40px 30px;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  z-index: 1;
+}
+
+.map-control-panel {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  bottom: 15px;
+  width: 380px;
+  background-color: white;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+}
+
+.system-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.panel-content {
+  padding: 15px 20px;
+  flex: 1;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+}
+
+.date-filter-placeholder {
+  flex: 1;
+  min-height: 100px;
+}
+
+.panel-footer {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #f8f9fa;
+}
+
+.download-button {
+  flex: 1;
+  padding: 6px 15px;
+  height: 34px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 1000px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.download-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.download-icon {
+  flex-shrink: 0;
+}
+
+.download-button:hover {
+  background: #0069d9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+.download-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.custom-zoom-control {
+  margin-bottom: 20px !important;
+  margin-right: 20px !important;
+  z-index: 1000;
+}
+
+.zoom-buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.zoom-in-button,
+.zoom-out-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(to right, #6a7677, #565e5e);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  padding: 0;
+  outline: none;
+}
+
+.zoom-in-button:focus,
+.zoom-out-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.zoom-in-button:hover,
+.zoom-out-button:hover {
+  background: linear-gradient(to right, #778586, #667272);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+.add-data-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 6px 15px;
+  height: 34px;
+  background: linear-gradient(to right, #6a7677, #565e5e);
+  color: white;
+  border: none;
+  border-radius: 1000px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  outline: none;
+}
+
+.add-data-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.add-data-button:hover {
+  background: linear-gradient(to right, #778586, #667272);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+.add-data-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .add-data-button {
+    font-size: 12px;
+    padding: 5px 8px;
+    height: 28px;
+  }
+}
+
+html,
+body,
+#root,
+.App,
+main {
+  overflow: hidden;
+}
+
+.leaflet-control-attribution {
+  display: none;
+}
