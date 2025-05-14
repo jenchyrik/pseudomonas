@@ -5,7 +5,7 @@ import AdminPanel from './components/AdminPanel'
 import Auth from './components/Auth'
 import Header from './components/Header'
 import Map from './components/Map'
-import { mockCheckAuth, mockLogout } from './mockApi'
+import { API_ENDPOINTS, getApiUrl } from './config/api'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -22,16 +22,15 @@ export default function App() {
           return
         }
 
-        // Используем мок API вместо реального запроса
-        const response = await mockCheckAuth(token)
+        const response = await fetch(getApiUrl(API_ENDPOINTS.auth.protected), {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
 
         if (response.ok) {
           const data = await response.json()
-          if (data.authenticated) {
-            setUser(data.user)
-          } else {
-            localStorage.removeItem('token')
-          }
+          setUser(data.user)
         } else {
           localStorage.removeItem('token')
         }
@@ -57,8 +56,12 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       if (token) {
-        // Используем мок API вместо реального запроса
-        await mockLogout()
+        await fetch(getApiUrl(API_ENDPOINTS.auth.logout), {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
       }
     } catch (error) {
       console.error('Ошибка при выходе из системы:', error)
