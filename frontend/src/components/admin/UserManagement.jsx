@@ -112,7 +112,13 @@ export default function UserManagement() {
               <tr key={user.id}>
                 <td>{user.id}</td>
                 <td>{user.email}</td>
-                <td>{user.role === 'admin' ? 'Администратор' : 'Пользователь'}</td>
+                <td>
+                  {user.role === 'admin' 
+                    ? 'Администратор' 
+                    : user.role === 'editor' 
+                      ? 'Редактор' 
+                      : 'Пользователь'}
+                </td>
                 <td>
                   <button
                     className="action-button edit"
@@ -174,6 +180,7 @@ export default function UserManagement() {
                       required
                     >
                       <option value="user">Пользователь</option>
+                      <option value="editor">Редактор</option>
                       <option value="admin">Администратор</option>
                     </select>
                   </div>

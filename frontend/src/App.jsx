@@ -121,7 +121,7 @@ export default function App() {
                   isAdmin() ? (
                     <Navigate to="/admin" />
                   ) : (
-                    <Map />
+                    <Map user={user} />
                   )
                 ) : (
                   <Navigate to="/login" />

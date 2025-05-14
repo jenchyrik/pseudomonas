@@ -1,11 +1,12 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import PropTypes from 'prop-types'
 import { useEffect, useRef, useState } from 'react'
 import DateRangePicker from './DateRangePicker.jsx'
 import './Map.css'
 import SaveImageModal from './SaveImageModal.jsx'
 
-export default function Map() {
+export default function Map({ user }) {
   const [mapInstance, setMapInstance] = useState(null)
   const mapRef = useRef(null)
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
@@ -182,17 +183,19 @@ export default function Map() {
     <div className="map-wrapper">
       <div id="map"></div>
 
-      <button className="add-data-button">
-        <svg
-          className="download-icon"
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-        >
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
-        </svg>
-        Добавить данные
-      </button>
+      {user?.role === 'editor' && (
+        <button className="add-data-button">
+          <svg
+            className="download-icon"
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+          >
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
+          </svg>
+          Добавить данные
+        </button>
+      )}
 
       <div className="map-control-panel">
         <div className="panel-header">
@@ -339,4 +342,10 @@ export default function Map() {
       />
     </div>
   )
+}
+
+Map.propTypes = {
+  user: PropTypes.shape({
+    role: PropTypes.string.isRequired
+  })
 }
