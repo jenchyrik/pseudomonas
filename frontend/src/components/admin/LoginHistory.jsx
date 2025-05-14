@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { API_ENDPOINTS, getApiUrl } from '../../config/api'
+import { getApiUrl } from '../../config/api'
+import '../../styles/admin.css'
 
 export default function LoginHistory() {
   const [loginHistory, setLoginHistory] = useState([])
@@ -13,7 +14,7 @@ export default function LoginHistory() {
   const fetchLoginHistory = async () => {
     try {
       setLoading(true)
-      const response = await fetch(getApiUrl(API_ENDPOINTS.auth.loginHistory), {
+      const response = await fetch(getApiUrl('/auth/login-history'), {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
@@ -42,31 +43,33 @@ export default function LoginHistory() {
   }
 
   return (
-    <div>
+    <div className="login-history-container">
       <div className="admin-header">
         <h2>История входов</h2>
       </div>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Пользователь</th>
-            <th>Действие</th>
-            <th>Дата и время</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loginHistory.map(entry => (
-            <tr key={entry.id}>
-              <td>{entry.id}</td>
-              <td>{entry.user.email}</td>
-              <td>{entry.action === 'login' ? 'Вход' : 'Выход'}</td>
-              <td>{new Date(entry.timestamp).toLocaleString('ru-RU')}</td>
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Пользователь</th>
+              <th>Действие</th>
+              <th>Дата и время</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {loginHistory.map(entry => (
+              <tr key={entry.id}>
+                <td>{entry.id}</td>
+                <td>{entry.user.email}</td>
+                <td>{entry.action}</td>
+                <td>{new Date(entry.timestamp).toLocaleString('ru-RU')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 } 

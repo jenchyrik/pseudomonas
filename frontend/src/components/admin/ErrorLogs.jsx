@@ -1,104 +1,93 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getApiUrl } from '../../config/api'
+import '../../styles/admin.css'
 
 export default function ErrorLogs() {
-  const [errorLogs] = useState([
-    {
-      id: 1,
-      timestamp: '07.05.2025 09:15:30',
-      level: 'ERROR',
-      message: 'Failed to connect to database',
-      stack: 'Error: Connection timeout...',
-    },
-    {
-      id: 2,
-      timestamp: '07.05.2025 10:22:45',
-      level: 'WARNING',
-      message: 'Invalid request parameters',
-      stack: 'Warning: Missing required field...',
-    },
-    {
-      id: 3,
-      timestamp: '07.05.2025 11:05:12',
-      level: 'ERROR',
-      message: 'Authentication failed',
-      stack: 'Error: Invalid credentials...',
-    },
-  ])
-
+  const [errorLogs, setErrorLogs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [selectedLog, setSelectedLog] = useState(null)
 
+  useEffect(() => {
+    fetchErrorLogs()
+  }, [])
+
+  const fetchErrorLogs = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(getApiUrl('/logs/errors'), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch error logs')
+      }
+
+      const data = await response.json()
+      setErrorLogs(data)
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <div className="loading">Загрузка...</div>
+  }
+
+  if (error) {
+    return <div className="error">Ошибка: {error}</div>
+  }
+
   return (
-    <div>
+    <div className="error-logs-container">
       <div className="admin-header">
-        <h2>Логи ошибок</h2>
+        <h2>Журнал ошибок</h2>
       </div>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Дата и время</th>
-            <th>Уровень</th>
-            <th>Сообщение</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {errorLogs.map(log => (
-            <tr key={log.id}>
-              <td>{log.id}</td>
-              <td>{log.timestamp}</td>
-              <td>
-                <span className={`log-level ${log.level.toLowerCase()}`}>
-                  {log.level}
-                </span>
-              </td>
-              <td>{log.message}</td>
-              <td>
-                <button
-                  className="action-button edit"
-                  onClick={() => setSelectedLog(log)}
-                >
-                  Подробнее
-                </button>
-              </td>
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Уровень</th>
+              <th>Сообщение</th>
+              <th>Дата и время</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {errorLogs.map(log => (
+              <tr key={log.id} onClick={() => setSelectedLog(log)}>
+                <td>{log.id}</td>
+                <td>{log.level}</td>
+                <td>{log.message}</td>
+                <td>{new Date(log.timestamp).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {selectedLog && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button
-              className="modal-close"
-              onClick={() => setSelectedLog(null)}
-            >
-              ×
-            </button>
+            <button className="modal-close" onClick={() => setSelectedLog(null)}>×</button>
             <h3 className="modal-title">Детали ошибки</h3>
             <div className="error-details">
-              <p>
-                <strong>ID:</strong> {selectedLog.id}
-              </p>
-              <p>
-                <strong>Дата и время:</strong> {selectedLog.timestamp}
-              </p>
-              <p>
-                <strong>Уровень:</strong>{' '}
-                <span
-                  className={`log-level ${selectedLog.level.toLowerCase()}`}
-                >
-                  {selectedLog.level}
-                </span>
-              </p>
-              <p>
-                <strong>Сообщение:</strong> {selectedLog.message}
-              </p>
-              <div className="stack-trace">
-                <strong>Stack Trace:</strong>
-                <pre>{selectedLog.stack}</pre>
-              </div>
+              <p><strong>ID:</strong> {selectedLog.id}</p>
+              <p><strong>Уровень:</strong> {selectedLog.level}</p>
+              <p><strong>Сообщение:</strong> {selectedLog.message}</p>
+              <p><strong>Дата и время:</strong> {new Date(selectedLog.timestamp).toLocaleString()}</p>
+              {selectedLog.stack && (
+                <div className="stack-trace">
+                  <p><strong>Стек вызовов:</strong></p>
+                  <pre>{selectedLog.stack}</pre>
+                </div>
+              )}
             </div>
           </div>
         </div>

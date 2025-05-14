@@ -1,0 +1,74 @@
+.login-history-container,
+.users-container,
+.error-logs-container {
+  height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
+.table-container {
+  height: 500px;
+  overflow-y: scroll;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 10px 0 20px 0;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-table thead {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  box-shadow: 0 1px 0 #ddd;
+}
+
+.admin-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.admin-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Стилизация скроллбара для всех контейнеров с таблицами */
+.table-container::-webkit-scrollbar,
+.users-container .table-container::-webkit-scrollbar,
+.error-logs-container .table-container::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.table-container::-webkit-scrollbar-track,
+.users-container .table-container::-webkit-scrollbar-track,
+.error-logs-container .table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+.users-container .table-container::-webkit-scrollbar-thumb,
+.error-logs-container .table-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+  min-height: 40px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover,
+.users-container .table-container::-webkit-scrollbar-thumb:hover,
+.error-logs-container .table-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 

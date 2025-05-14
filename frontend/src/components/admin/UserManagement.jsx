@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getUsers, createUser, updateUser, deleteUser, changePassword } from '../../services/api'
+import '../../styles/admin.css'
 
 export default function UserManagement() {
   const [users, setUsers] = useState([])
@@ -88,7 +89,7 @@ export default function UserManagement() {
   }
 
   return (
-    <div>
+    <div className="users-container">
       <div className="admin-header">
         <h2>Управление пользователями</h2>
         <button className="action-button edit" onClick={handleAddUser}>
@@ -96,45 +97,47 @@ export default function UserManagement() {
         </button>
       </div>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Роль</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>{user.role === 'admin' ? 'Администратор' : 'Пользователь'}</td>
-              <td>
-                <button
-                  className="action-button edit"
-                  onClick={() => handleEditUser(user)}
-                >
-                  Изменить
-                </button>
-                <button
-                  className="action-button edit"
-                  onClick={() => handleChangePassword(user)}
-                >
-                  Сменить пароль
-                </button>
-                <button
-                  className="action-button delete"
-                  onClick={() => handleDeleteUser(user.id)}
-                >
-                  Удалить
-                </button>
-              </td>
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Роль</th>
+              <th>Действия</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.email}</td>
+                <td>{user.role === 'admin' ? 'Администратор' : 'Пользователь'}</td>
+                <td>
+                  <button
+                    className="action-button edit"
+                    onClick={() => handleEditUser(user)}
+                  >
+                    Изменить
+                  </button>
+                  <button
+                    className="action-button edit"
+                    onClick={() => handleChangePassword(user)}
+                  >
+                    Сменить пароль
+                  </button>
+                  <button
+                    className="action-button delete"
+                    onClick={() => handleDeleteUser(user.id)}
+                  >
+                    Удалить
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {showModal && (
         <div className="modal-overlay">
