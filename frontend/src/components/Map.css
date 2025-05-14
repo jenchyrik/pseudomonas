@@ -60,6 +60,57 @@
   overflow-y: auto;
 }
 
+.date-picker-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.filter-group {
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 12px 15px;
+  background-color: #f9f9f9;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  font-family: inherit;
+}
+
+.filter-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #444;
+  font-family: inherit;
+  padding: 2px 0;
+}
+
+.filter-checkbox input {
+  margin-right: 8px;
+  accent-color: #007bff;
+}
+
 .date-filter-placeholder {
   flex: 1;
   min-height: 100px;

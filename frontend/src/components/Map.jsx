@@ -9,6 +9,49 @@ export default function Map() {
   const [mapInstance, setMapInstance] = useState(null)
   const mapRef = useRef(null)
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
+  const [filters, setFilters] = useState({
+    dateRange: { start: null, end: null },
+    genotype: {
+      indel1: false,
+      indel2: false
+    },
+    resistanceGenes: {
+      blaVIM: false,
+      blaNDM: false,
+      carbapenems: false
+    },
+    source: {
+      blood: false,
+      sputum: false,
+      water: false
+    }
+  })
+
+  const handleFilterChange = (category, name, checked) => {
+    setFilters(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [name]: checked
+      }
+    }))
+  }
+
+  const handleDateRangeSelect = (range) => {
+    setFilters(prev => ({
+      ...prev,
+      dateRange: range
+    }))
+    console.log('Selected range:', range)
+  }
+
+  useEffect(() => {
+    // Apply filters to map data when filters change
+    if (mapInstance) {
+      console.log('Applying filters:', filters)
+      // Here you would implement the logic to filter the map data based on the selected filters
+    }
+  }, [filters, mapInstance])
 
   useEffect(() => {
     console.log('Карта инициализируется...')
@@ -25,9 +68,53 @@ export default function Map() {
     setMapInstance(map)
     mapRef.current = map
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Базовый слой OpenStreetMap
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap',
-    }).addTo(map)
+      zIndex: 1
+    })
+
+    // Слой antiplague.ru
+    const antiplagueLayer = L.tileLayer('http://localhost:3001/tiles/Khersonskaya/{z}/{x}/{y}.png', {
+      attribution: '© Antiplague',
+      opacity: 1,
+      zIndex: 2,
+      maxZoom: 19,
+      minZoom: 0,
+      crossOrigin: true,
+      errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+      tileSize: 256,
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 2
+    })
+
+    // Добавляем слои в правильном порядке
+    osmLayer.addTo(map)
+    antiplagueLayer.addTo(map)
+
+    // Добавляем обработчик ошибок загрузки тайлов
+    antiplagueLayer.on('tileerror', function(e) {
+      // Тихо игнорируем ошибки загрузки тайлов
+      e.tile.src = antiplagueLayer.options.errorTileUrl;
+    });
+
+    // Отключаем вывод ошибок в консоль для тайлов
+    const originalConsoleError = console.error;
+    console.error = function(...args) {
+      if (args[0] && typeof args[0] === 'string' && args[0].includes('Ошибка загрузки тайла')) {
+        return; // Игнорируем ошибки загрузки тайлов
+      }
+      originalConsoleError.apply(console, args);
+    };
+
+    antiplagueLayer.on('tileloadstart', function(e) {
+      console.log('Начало загрузки тайла:', e.tile.src);
+    });
+
+    antiplagueLayer.on('tileload', function(e) {
+      console.log('Тайл успешно загружен:', e.tile.src);
+    });
 
     const zoomControlContainer = L.DomUtil.create('div', 'custom-zoom-control')
 
@@ -114,10 +201,100 @@ export default function Map() {
 
         <div className="panel-content">
           <DateRangePicker
-            onRangeSelect={range => {
-              console.log('Selected range:', range)
-            }}
+            onRangeSelect={handleDateRangeSelect}
           />
+          
+          <div className="filter-section">
+            <div className="filter-group">
+              <h3 className="filter-title">Генотип</h3>
+              <div className="filter-checkboxes">
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="genotype-indel1" 
+                    checked={filters.genotype.indel1}
+                    onChange={(e) => handleFilterChange('genotype', 'indel1', e.target.checked)}
+                  />
+                  <span>INDEL-1</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="genotype-indel2" 
+                    checked={filters.genotype.indel2}
+                    onChange={(e) => handleFilterChange('genotype', 'indel2', e.target.checked)}
+                  />
+                  <span>INDEL-2</span>
+                </label>
+              </div>
+            </div>
+            
+            <div className="filter-group">
+              <h3 className="filter-title">Гены резистентности</h3>
+              <div className="filter-checkboxes">
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="resistance-blaVIM" 
+                    checked={filters.resistanceGenes.blaVIM}
+                    onChange={(e) => handleFilterChange('resistanceGenes', 'blaVIM', e.target.checked)}
+                  />
+                  <span>blaVIM</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="resistance-blaNDM" 
+                    checked={filters.resistanceGenes.blaNDM}
+                    onChange={(e) => handleFilterChange('resistanceGenes', 'blaNDM', e.target.checked)}
+                  />
+                  <span>blaNDM</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="resistance-carbapenems" 
+                    checked={filters.resistanceGenes.carbapenems}
+                    onChange={(e) => handleFilterChange('resistanceGenes', 'carbapenems', e.target.checked)}
+                  />
+                  <span>карбапенемазы</span>
+                </label>
+              </div>
+            </div>
+            
+            <div className="filter-group">
+              <h3 className="filter-title">Источник</h3>
+              <div className="filter-checkboxes">
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="source-blood" 
+                    checked={filters.source.blood}
+                    onChange={(e) => handleFilterChange('source', 'blood', e.target.checked)}
+                  />
+                  <span>Кровь</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="source-sputum" 
+                    checked={filters.source.sputum}
+                    onChange={(e) => handleFilterChange('source', 'sputum', e.target.checked)}
+                  />
+                  <span>Мокрота</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    name="source-water" 
+                    checked={filters.source.water}
+                    onChange={(e) => handleFilterChange('source', 'water', e.target.checked)}
+                  />
+                  <span>Вода</span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="panel-footer">

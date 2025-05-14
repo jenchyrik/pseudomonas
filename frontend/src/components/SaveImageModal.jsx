@@ -12,6 +12,7 @@ export default function SaveImageModal({ isOpen, onClose, mapInstance }) {
     if (!mapInstance) return
 
     try {
+      setIsLoading(true)
       const container = mapInstance.getContainer()
       const mapControlPanel = document.querySelector('.map-control-panel')
 
@@ -19,16 +20,67 @@ export default function SaveImageModal({ isOpen, onClose, mapInstance }) {
       const panelRect = mapControlPanel?.getBoundingClientRect()
 
       const leftOffset = panelRect ? panelRect.width : 0
-
       const visibleWidth = mapRect.width - leftOffset
+
+      // Ждем загрузки всех тайлов
+      const waitForTiles = () => {
+        return new Promise((resolve) => {
+          const tiles = container.querySelectorAll('.leaflet-tile')
+          if (tiles.length === 0) {
+            resolve()
+            return
+          }
+
+          let loadedTiles = 0
+          let failedTiles = 0
+          const totalTiles = tiles.length
+          const maxRetries = 3
+          let retryCount = 0
+
+          const checkAllLoaded = () => {
+            loadedTiles++
+            if (loadedTiles + failedTiles >= totalTiles) {
+              if (failedTiles > 0 && retryCount < maxRetries) {
+                retryCount++
+                console.log(`Retrying failed tiles (attempt ${retryCount}/${maxRetries})...`)
+                loadedTiles = 0
+                failedTiles = 0
+                setTimeout(() => {
+                  Array.from(tiles).forEach(tile => {
+                    if (!tile.complete) {
+                      tile.src = tile.src // Force reload
+                    }
+                  })
+                }, 1000)
+              } else {
+                setTimeout(resolve, 1000) // Даем дополнительное время для рендеринга
+              }
+            }
+          }
+
+          Array.from(tiles).forEach(tile => {
+            if (tile.complete) {
+              checkAllLoaded()
+            } else {
+              tile.onload = checkAllLoaded
+              tile.onerror = () => {
+                failedTiles++
+                checkAllLoaded()
+              }
+            }
+          })
+        })
+      }
+
+      await waitForTiles()
 
       const canvas = await html2canvas(container, {
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
-        scale: 1,
-        logging: false,
-        imageTimeout: 0,
+        scale: 2,
+        logging: true,
+        imageTimeout: 15000,
         width: visibleWidth,
         x: leftOffset,
         onclone: (clonedDoc, element) => {
@@ -59,12 +111,14 @@ export default function SaveImageModal({ isOpen, onClose, mapInstance }) {
         blob => {
           const url = URL.createObjectURL(blob)
           setPreviewUrl(url)
+          setIsLoading(false)
         },
         `image/${imageFormat}`,
         imageFormat === 'jpeg' ? 0.9 : 1.0
       )
     } catch (error) {
       console.error('Ошибка при создании предпросмотра:', error)
+      setIsLoading(false)
     }
   }, [mapInstance, imageFormat])
 

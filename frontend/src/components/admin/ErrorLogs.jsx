@@ -4,21 +4,21 @@ export default function ErrorLogs() {
   const [errorLogs] = useState([
     {
       id: 1,
-      timestamp: '2024-02-20 09:15:30',
+      timestamp: '07.05.2025 09:15:30',
       level: 'ERROR',
       message: 'Failed to connect to database',
       stack: 'Error: Connection timeout...',
     },
     {
       id: 2,
-      timestamp: '2024-02-20 10:22:45',
+      timestamp: '07.05.2025 10:22:45',
       level: 'WARNING',
       message: 'Invalid request parameters',
       stack: 'Warning: Missing required field...',
     },
     {
       id: 3,
-      timestamp: '2024-02-20 11:05:12',
+      timestamp: '07.05.2025 11:05:12',
       level: 'ERROR',
       message: 'Authentication failed',
       stack: 'Error: Invalid credentials...',
