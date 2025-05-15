@@ -6,12 +6,15 @@ import { User } from '../users/user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { RegisterCredentialsDto } from './dto/register-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
+import { LoginHistory, LoginAction } from './login-history.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(LoginHistory)
+    private loginHistoryRepository: Repository<LoginHistory>,
     private jwtService: JwtService,
   ) {}
 
@@ -45,13 +48,21 @@ export class AuthService {
     return null;
   }
 
-  async login(authCredentialsDto: AuthCredentialsDto) {
+  async login(authCredentialsDto: AuthCredentialsDto, ipAddress: string) {
     const { email, password } = authCredentialsDto;
     const user = await this.validateUser(email, password);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Record login event
+    const loginHistory = this.loginHistoryRepository.create({
+      user_id: user.id,
+      action: LoginAction.LOGIN,
+      ip_address: ipAddress,
+    });
+    await this.loginHistoryRepository.save(loginHistory);
 
     const payload: JwtPayload = { email: user.email, role: user.role };
     return {
@@ -62,5 +73,23 @@ export class AuthService {
         role: user.role
       }
     };
+  }
+
+  async logout(userId: string, ipAddress: string) {
+    const loginHistory = this.loginHistoryRepository.create({
+      user_id: userId,
+      action: LoginAction.LOGOUT,
+      ip_address: ipAddress,
+    });
+    await this.loginHistoryRepository.save(loginHistory);
+  }
+
+  async getLoginHistory() {
+    return this.loginHistoryRepository.find({
+      relations: ['user'],
+      order: {
+        timestamp: 'DESC'
+      }
+    });
   }
 } 

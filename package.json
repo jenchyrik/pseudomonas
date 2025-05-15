@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "pg": "^8.15.6"
+    "@ant-design/icons": "^6.0.0",
+    "antd": "^5.25.1",
+    "axios": "^1.9.0",
+    "dayjs": "^1.11.13",
+    "pg": "^8.15.6",
+    "react-i18next": "^15.5.1"
   }
 }

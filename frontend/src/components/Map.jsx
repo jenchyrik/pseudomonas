@@ -5,11 +5,20 @@ import { useEffect, useRef, useState } from 'react'
 import DateRangePicker from './DateRangePicker.jsx'
 import './Map.css'
 import SaveImageModal from './SaveImageModal.jsx'
+import AddStrainModal from './AddStrainModal'
+import axios from 'axios'
+import { getApiUrl, API_ENDPOINTS } from '../config/api'
 
 export default function Map({ user }) {
   const [mapInstance, setMapInstance] = useState(null)
   const mapRef = useRef(null)
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
+  const [isAddStrainModalOpen, setIsAddStrainModalOpen] = useState(false)
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
   const [filters, setFilters] = useState({
     dateRange: { start: null, end: null },
     genotype: {
@@ -45,6 +54,73 @@ export default function Map({ user }) {
     }))
     console.log('Selected range:', range)
   }
+
+  const handleAddStrain = async (data) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setNotification({
+          open: true,
+          message: 'Необходимо авторизоваться',
+          severity: 'error'
+        });
+        return;
+      }
+
+      console.log('Полученные данные:', data);
+      console.log('Тип даты:', typeof data.date);
+      console.log('Значение даты:', data.date);
+
+      // Форматируем данные перед отправкой
+      const formattedData = {
+        ...data,
+        latitude: parseFloat(data.latitude),
+        longitude: parseFloat(data.longitude),
+        date: data.date
+      };
+
+      console.log('Отформатированные данные:', formattedData);
+      console.log('Тип даты после форматирования:', typeof formattedData.date);
+      console.log('Полный объект для отправки:', JSON.stringify(formattedData, null, 2));
+
+      const response = await axios.post(getApiUrl(API_ENDPOINTS.points.create), formattedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Ответ сервера:', response.data);
+
+      setNotification({
+        open: true,
+        message: 'Данные успешно добавлены',
+        severity: 'success'
+      });
+      
+      // Автоматически скрываем уведомление через 3 секунды
+      setTimeout(() => {
+        setNotification(prev => ({
+          ...prev,
+          open: false
+        }));
+      }, 3000);
+    } catch (error) {
+      console.error('Error adding strain:', error);
+      console.error('Детали ошибки:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      setNotification({
+        open: true,
+        message: error.response?.data?.message || 'Ошибка при добавлении данных',
+        severity: 'error'
+      });
+    }
+  };
 
   useEffect(() => {
     // Apply filters to map data when filters change
@@ -184,7 +260,10 @@ export default function Map({ user }) {
       <div id="map"></div>
 
       {user?.role === 'editor' && (
-        <button className="add-data-button">
+        <button 
+          className="add-data-button"
+          onClick={() => setIsAddStrainModalOpen(true)}
+        >
           <svg
             className="download-icon"
             viewBox="0 0 24 24"
@@ -340,6 +419,24 @@ export default function Map({ user }) {
         onClose={() => setIsSaveModalOpen(false)}
         mapInstance={mapInstance}
       />
+
+      <AddStrainModal
+        open={isAddStrainModalOpen}
+        onClose={() => setIsAddStrainModalOpen(false)}
+        onSubmit={handleAddStrain}
+      />
+
+      {notification.open && (
+        <div className={`notification ${notification.severity}`}>
+          {notification.message}
+          <button 
+            className="notification-close"
+            onClick={() => setNotification(prev => ({ ...prev, open: false }))}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,7 +6,15 @@ export const API_ENDPOINTS = {
     register: '/auth/register',
     logout: '/auth/logout',
     loginHistory: '/auth/login-history',
+    protected: '/auth/protected'
   },
+  points: {
+    create: '/points',
+    getAll: '/points',
+    getOne: '/points/:id',
+    update: '/points/:id',
+    delete: '/points/:id'
+  }
 }
 
 export const getApiUrl = endpoint => `${API_BASE_URL}${endpoint}`

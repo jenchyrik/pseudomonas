@@ -3,6 +3,7 @@ import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
   USER = 'user',
+  EDITOR = 'editor',
   ADMIN = 'admin',
 }
 

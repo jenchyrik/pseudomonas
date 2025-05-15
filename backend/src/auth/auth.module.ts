@@ -7,6 +7,7 @@ import { User } from '../users/user.entity'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { JwtStrategy } from './jwt.strategy'
+import { LoginHistory } from './login-history.entity'
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy'
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, LoginHistory]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
