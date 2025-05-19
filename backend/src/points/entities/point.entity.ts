@@ -1,5 +1,22 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
+export enum MucoidPhenotype {
+  MUTANT = 'mutant',
+  WILD_TYPE = 'wild type'
+}
+
+export enum ExoStatus {
+  POSITIVE = '+',
+  NEGATIVE = '-'
+}
+
+export enum FlagellarAntigen {
+  A1 = 'A1',
+  A2 = 'A2',
+  B = 'B',
+  UNDEFINED = 'не определен'
+}
+
 @Entity('points')
 export class Point {
   @PrimaryGeneratedColumn()
@@ -17,17 +34,33 @@ export class Point {
   @Column()
   serogroup: string;
 
-  @Column()
-  flagellarAntigen: string;
+  @Column({
+    type: 'enum',
+    enum: FlagellarAntigen,
+    default: FlagellarAntigen.UNDEFINED
+  })
+  flagellarAntigen: FlagellarAntigen;
 
-  @Column()
-  mucoidPhenotype: string;
+  @Column({
+    type: 'enum',
+    enum: MucoidPhenotype,
+    default: MucoidPhenotype.WILD_TYPE
+  })
+  mucoidPhenotype: MucoidPhenotype;
 
-  @Column()
-  exoS: string;
+  @Column({
+    type: 'enum',
+    enum: ExoStatus,
+    default: ExoStatus.NEGATIVE
+  })
+  exoS: ExoStatus;
 
-  @Column()
-  exoU: string;
+  @Column({
+    type: 'enum',
+    enum: ExoStatus,
+    default: ExoStatus.NEGATIVE
+  })
+  exoU: ExoStatus;
 
   @Column('decimal', { precision: 10, scale: 8 })
   latitude: number;

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Box, Button, Snackbar, Alert } from '@mui/material';
 import AddStrainModal from './AddStrainModal';
 import axios from 'axios';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import './Map.css';
 
 const Map: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [points, setPoints] = useState<any[]>([]);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -15,6 +17,26 @@ const Map: React.FC = () => {
     message: '',
     severity: 'success'
   });
+
+  useEffect(() => {
+    const fetchPoints = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await axios.get(getApiUrl(API_ENDPOINTS.points.get), {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setPoints(response.data);
+      } catch (error) {
+        console.error('Error fetching points:', error);
+      }
+    };
+
+    fetchPoints();
+  }, []);
 
   const handleAddStrain = async (data: any) => {
     try {
@@ -28,11 +50,13 @@ const Map: React.FC = () => {
         return;
       }
 
-      await axios.post('http://localhost:3000/points', data, {
+      const response = await axios.post(getApiUrl(API_ENDPOINTS.points.create), data, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+
+      setPoints(prev => [...prev, response.data]);
 
       setNotification({
         open: true,
@@ -53,23 +77,27 @@ const Map: React.FC = () => {
     setNotification(prev => ({ ...prev, open: false }));
   };
 
+  // Определяем центр карты
+  const getMapCenter = (): [number, number] => {
+    if (points.length > 0) {
+      // Если есть точки, центрируем на первой точке
+      return [points[0].latitude, points[0].longitude];
+    }
+    // Если точек нет, центрируем на Ростове-на-Дону
+    return [47.2357, 39.7015];
+  };
+
   return (
-    <Box sx={{ position: 'relative', height: '100vh', width: '100%' }}>
-      <Button
-        variant="contained"
+    <div className="map-container">
+      <button
+        className="add-data-button"
         onClick={() => setIsModalOpen(true)}
-        sx={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-          zIndex: 1000,
-        }}
       >
         Добавить данные
-      </Button>
+      </button>
 
       <MapContainer
-        center={[55.7558, 37.6173]}
+        center={getMapCenter()}
         zoom={13}
         style={{ height: '100%', width: '100%' }}
       >
@@ -77,6 +105,16 @@ const Map: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        {points.map((point, index) => (
+          <Marker
+            key={index}
+            position={[point.latitude, point.longitude]}
+          >
+            <Popup>
+              {point.name || 'Точка'}
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
 
       <AddStrainModal
@@ -85,21 +123,15 @@ const Map: React.FC = () => {
         onSubmit={handleAddStrain}
       />
 
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert
-          onClose={handleCloseNotification}
-          severity={notification.severity}
-          sx={{ width: '100%' }}
-        >
-          {notification.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+      {notification.open && (
+        <div className={`notification ${notification.severity}`}>
+          <div className="notification-content">
+            {notification.message}
+            <button className="notification-close" onClick={handleCloseNotification}>×</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

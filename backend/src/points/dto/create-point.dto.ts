@@ -1,5 +1,6 @@
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString, IsEnum } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+import { MucoidPhenotype, ExoStatus, FlagellarAntigen } from '../entities/point.entity';
 
 export class CreatePointDto {
   @IsString()
@@ -18,21 +19,21 @@ export class CreatePointDto {
   @IsNotEmpty()
   serogroup: string;
 
-  @IsString()
+  @IsEnum(FlagellarAntigen)
   @IsNotEmpty()
-  flagellarAntigen: string;
+  flagellarAntigen: FlagellarAntigen;
 
-  @IsString()
+  @IsEnum(MucoidPhenotype)
   @IsNotEmpty()
-  mucoidPhenotype: string;
+  mucoidPhenotype: MucoidPhenotype;
 
-  @IsString()
+  @IsEnum(ExoStatus)
   @IsNotEmpty()
-  exoS: string;
+  exoS: ExoStatus;
 
-  @IsString()
+  @IsEnum(ExoStatus)
   @IsNotEmpty()
-  exoU: string;
+  exoU: ExoStatus;
 
   @IsNumber()
   @IsNotEmpty()

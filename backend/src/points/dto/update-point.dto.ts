@@ -1,4 +1,5 @@
-import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
+import { MucoidPhenotype, ExoStatus, FlagellarAntigen } from '../entities/point.entity';
 
 export class UpdatePointDto {
   @IsString()
@@ -17,21 +18,21 @@ export class UpdatePointDto {
   @IsOptional()
   serogroup?: string;
 
-  @IsString()
+  @IsEnum(FlagellarAntigen)
   @IsOptional()
-  flagellarAntigen?: string;
+  flagellarAntigen?: FlagellarAntigen;
 
-  @IsString()
+  @IsEnum(MucoidPhenotype)
   @IsOptional()
-  mucoidPhenotype?: string;
+  mucoidPhenotype?: MucoidPhenotype;
 
-  @IsString()
+  @IsEnum(ExoStatus)
   @IsOptional()
-  exoS?: string;
+  exoS?: ExoStatus;
 
-  @IsString()
+  @IsEnum(ExoStatus)
   @IsOptional()
-  exoU?: string;
+  exoU?: ExoStatus;
 
   @IsNumber()
   @IsOptional()

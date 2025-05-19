@@ -1,24 +1,37 @@
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import PropTypes from 'prop-types'
-import { useEffect, useRef, useState } from 'react'
-import DateRangePicker from './DateRangePicker.jsx'
-import './Map.css'
-import SaveImageModal from './SaveImageModal.jsx'
-import AddStrainModal from './AddStrainModal'
-import axios from 'axios'
-import { getApiUrl, API_ENDPOINTS } from '../config/api'
+import { useEffect, useRef, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import PropTypes from 'prop-types';
+import DateRangePicker from './DateRangePicker.jsx';
+import './Map.css';
+import SaveImageModal from './SaveImageModal.jsx';
+import AddStrainModal from './AddStrainModal';
+import axios from 'axios';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import 'leaflet.markercluster';
 
-export default function Map({ user }) {
-  const [mapInstance, setMapInstance] = useState(null)
-  const mapRef = useRef(null)
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
-  const [isAddStrainModalOpen, setIsAddStrainModalOpen] = useState(false)
-  const [notification, setNotification] = useState({
-    open: false,
-    message: '',
-    severity: 'success'
-  });
+// Исправляем проблему с иконками маркеров
+let DefaultIcon = L.icon({
+  iconUrl: '/images/marker-icon.png',
+  shadowUrl: '/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
+const Map = ({ user }) => {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const clusterGroupRef = useRef(null);
+  const [notification, setNotification] = useState(null);
+  const [points, setPoints] = useState([]);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isAddStrainModalOpen, setIsAddStrainModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     dateRange: { start: null, end: null },
     genotype: {
@@ -35,7 +48,87 @@ export default function Map({ user }) {
       sputum: false,
       water: false
     }
-  })
+  });
+
+  // Функция для получения точек с сервера
+  const fetchPoints = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.points.getAll), {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setPoints(response.data);
+    } catch (error) {
+      console.error('Error fetching points:', error);
+      setNotification({
+        open: true,
+        message: 'Ошибка при загрузке данных',
+        severity: 'error'
+      });
+    }
+  };
+
+  // Функция для отображения точек на карте
+  const displayPoints = () => {
+    if (!mapInstanceRef.current || !clusterGroupRef.current) return;
+
+    // Очищаем существующие маркеры
+    clusterGroupRef.current.clearLayers();
+
+    points.forEach(point => {
+      const marker = L.marker([point.latitude, point.longitude], {
+        icon: L.icon({
+          iconUrl: '/images/marker-icon.png',
+          shadowUrl: '/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        })
+      });
+
+      const popupContent = `
+        <div class="marker-popup">
+          <h3>${point.strainName}</h3>
+          <p><strong>CRISPR тип:</strong> ${point.crisprType}</p>
+          <p><strong>Indel генотип:</strong> ${point.indelGenotype}</p>
+          <p><strong>Серогруппа:</strong> ${point.serogroup}</p>
+          <p><strong>Тип жгутикового антигена:</strong> ${point.flagellarAntigen}</p>
+          <p><strong>Мукоидный фенотип:</strong> ${point.mucoidPhenotype}</p>
+          <p><strong>exoS:</strong> ${point.exoS}</p>
+          <p><strong>exoU:</strong> ${point.exoU}</p>
+          <p><strong>Дата:</strong> ${new Date(point.date).toLocaleDateString()}</p>
+          <p><strong>Объект выделения:</strong> ${point.isolationObject}</p>
+        </div>
+      `;
+
+      marker.bindPopup(popupContent);
+      clusterGroupRef.current.addLayer(marker);
+    });
+
+    // Если есть маркеры, центрируем карту на них
+    if (points.length > 0) {
+      const bounds = clusterGroupRef.current.getBounds();
+      mapInstanceRef.current.fitBounds(bounds, {
+        padding: [50, 50]
+      });
+    }
+  };
+
+  // Загружаем точки при монтировании компонента
+  useEffect(() => {
+    fetchPoints();
+  }, []);
+
+  // Обновляем маркеры при изменении точек или карты
+  useEffect(() => {
+    displayPoints();
+  }, [points, mapInstanceRef.current]);
 
   const handleFilterChange = (category, name, checked) => {
     setFilters(prev => ({
@@ -71,7 +164,6 @@ export default function Map({ user }) {
       console.log('Тип даты:', typeof data.date);
       console.log('Значение даты:', data.date);
 
-      // Форматируем данные перед отправкой
       const formattedData = {
         ...data,
         latitude: parseFloat(data.latitude),
@@ -92,13 +184,15 @@ export default function Map({ user }) {
 
       console.log('Ответ сервера:', response.data);
 
+      // Обновляем список точек после успешного добавления
+      await fetchPoints();
+
       setNotification({
         open: true,
         message: 'Данные успешно добавлены',
         severity: 'success'
       });
       
-      // Автоматически скрываем уведомление через 3 секунды
       setTimeout(() => {
         setNotification(prev => ({
           ...prev,
@@ -124,11 +218,11 @@ export default function Map({ user }) {
 
   useEffect(() => {
     // Apply filters to map data when filters change
-    if (mapInstance) {
+    if (mapInstanceRef.current) {
       console.log('Applying filters:', filters)
       // Here you would implement the logic to filter the map data based on the selected filters
     }
-  }, [filters, mapInstance])
+  }, [filters, mapInstanceRef.current])
 
   useEffect(() => {
     console.log('Карта инициализируется...')
@@ -140,15 +234,20 @@ export default function Map({ user }) {
       touchZoom: true,
       doubleClickZoom: true,
       boxZoom: true,
+      minZoom: 0,
+      maxZoom: 19,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5
     }).setView([47.2313, 39.7233], 13)
 
-    setMapInstance(map)
+    mapInstanceRef.current = map
     mapRef.current = map
 
     // Базовый слой OpenStreetMap
     const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap',
-      zIndex: 1
+      zIndex: 1,
+      maxZoom: 19
     })
 
     // Слой antiplague.ru
@@ -172,7 +271,6 @@ export default function Map({ user }) {
 
     // Добавляем обработчик ошибок загрузки тайлов
     antiplagueLayer.on('tileerror', function(e) {
-      // Тихо игнорируем ошибки загрузки тайлов
       e.tile.src = antiplagueLayer.options.errorTileUrl;
     });
 
@@ -180,18 +278,22 @@ export default function Map({ user }) {
     const originalConsoleError = console.error;
     console.error = function(...args) {
       if (args[0] && typeof args[0] === 'string' && args[0].includes('Ошибка загрузки тайла')) {
-        return; // Игнорируем ошибки загрузки тайлов
+        return;
       }
       originalConsoleError.apply(console, args);
     };
 
-    antiplagueLayer.on('tileloadstart', function(e) {
-      console.log('Начало загрузки тайла:', e.tile.src);
+    // Создаем группу кластеризации после инициализации карты
+    clusterGroupRef.current = new L.MarkerClusterGroup({
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      maxClusterRadius: 50,
+      spiderLegPolylineOptions: { weight: 1.5, color: '#222', opacity: 0.5 }
     });
 
-    antiplagueLayer.on('tileload', function(e) {
-      console.log('Тайл успешно загружен:', e.tile.src);
-    });
+    // Добавляем группу кластеризации на карту
+    map.addLayer(clusterGroupRef.current);
 
     const zoomControlContainer = L.DomUtil.create('div', 'custom-zoom-control')
 
@@ -251,9 +353,12 @@ export default function Map({ user }) {
     )
 
     return () => {
-      map.remove()
+      if (clusterGroupRef.current) {
+        clusterGroupRef.current.clearLayers();
+      }
+      map.remove();
     }
-  }, [])
+  }, []);
 
   return (
     <div className="map-wrapper">
@@ -417,7 +522,7 @@ export default function Map({ user }) {
       <SaveImageModal
         isOpen={isSaveModalOpen}
         onClose={() => setIsSaveModalOpen(false)}
-        mapInstance={mapInstance}
+        mapInstance={mapInstanceRef.current}
       />
 
       <AddStrainModal
@@ -426,12 +531,12 @@ export default function Map({ user }) {
         onSubmit={handleAddStrain}
       />
 
-      {notification.open && (
+      {notification && (
         <div className={`notification ${notification.severity}`}>
           {notification.message}
           <button 
             className="notification-close"
-            onClick={() => setNotification(prev => ({ ...prev, open: false }))}
+            onClick={() => setNotification(null)}
           >
             ×
           </button>
@@ -446,3 +551,5 @@ Map.propTypes = {
     role: PropTypes.string.isRequired
   })
 }
+
+export default Map;
