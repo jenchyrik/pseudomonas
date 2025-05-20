@@ -34,21 +34,27 @@ const Map = ({ user }) => {
   const [isAddStrainModalOpen, setIsAddStrainModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     dateRange: { start: null, end: null },
-    genotype: {
-      indel1: false,
-      indel2: false
+    strainName: '',
+    flagellarAntigen: {
+      A1: false,
+      A2: false,
+      B: false,
+      UNDEFINED: false
     },
-    resistanceGenes: {
-      blaVIM: false,
-      blaNDM: false,
-      carbapenems: false
+    mucoidPhenotype: {
+      'mutant': false,
+      'wild type': false
     },
-    source: {
-      blood: false,
-      sputum: false,
-      water: false
+    exoS: {
+      '+': false,
+      '-': false
+    },
+    exoU: {
+      '+': false,
+      '-': false
     }
   });
+  const [filteredPoints, setFilteredPoints] = useState([]);
 
   // Функция для получения точек с сервера
   const fetchPoints = async () => {
@@ -73,14 +79,65 @@ const Map = ({ user }) => {
     }
   };
 
-  // Функция для отображения точек на карте
-  const displayPoints = () => {
+  // Функция для фильтрации точек
+  const filterPoints = (points) => {
+    return points.filter(point => {
+      // Фильтр по названию штамма
+      if (filters.strainName && !point.strainName.toLowerCase().includes(filters.strainName.toLowerCase())) {
+        return false;
+      }
+
+      // Фильтр по жгутиковому антигену
+      const hasFlagellarAntigen = Object.entries(filters.flagellarAntigen).some(([key, value]) => value && point.flagellarAntigen === key);
+      if (Object.values(filters.flagellarAntigen).some(v => v) && !hasFlagellarAntigen) {
+        return false;
+      }
+
+      // Фильтр по мукоидному фенотипу
+      const hasMucoidPhenotype = Object.entries(filters.mucoidPhenotype).some(([key, value]) => value && point.mucoidPhenotype === key);
+      if (Object.values(filters.mucoidPhenotype).some(v => v) && !hasMucoidPhenotype) {
+        return false;
+      }
+
+      // Фильтр по ExoS
+      const hasExoS = Object.entries(filters.exoS).some(([key, value]) => value && point.exoS === key);
+      if (Object.values(filters.exoS).some(v => v) && !hasExoS) {
+        return false;
+      }
+
+      // Фильтр по ExoU
+      const hasExoU = Object.entries(filters.exoU).some(([key, value]) => value && point.exoU === key);
+      if (Object.values(filters.exoU).some(v => v) && !hasExoU) {
+        return false;
+      }
+
+      // Фильтр по дате
+      if (filters.dateRange.start && filters.dateRange.end) {
+        const pointDate = new Date(point.date);
+        const startDate = new Date(filters.dateRange.start);
+        const endDate = new Date(filters.dateRange.end);
+        if (pointDate < startDate || pointDate > endDate) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
+  // Обновляем отфильтрованные точки при изменении фильтров или точек
+  useEffect(() => {
+    setFilteredPoints(filterPoints(points));
+  }, [filters, points]);
+
+  // Обновляем маркеры при изменении отфильтрованных точек
+  useEffect(() => {
     if (!mapInstanceRef.current || !clusterGroupRef.current) return;
 
     // Очищаем существующие маркеры
     clusterGroupRef.current.clearLayers();
 
-    points.forEach(point => {
+    filteredPoints.forEach(point => {
       const marker = L.marker([point.latitude, point.longitude], {
         icon: L.icon({
           iconUrl: '/images/marker-icon.png',
@@ -112,32 +169,34 @@ const Map = ({ user }) => {
     });
 
     // Если есть маркеры, центрируем карту на них
-    if (points.length > 0) {
+    if (filteredPoints.length > 0) {
       const bounds = clusterGroupRef.current.getBounds();
       mapInstanceRef.current.fitBounds(bounds, {
         padding: [50, 50]
       });
     }
-  };
+  }, [filteredPoints, mapInstanceRef.current]);
 
   // Загружаем точки при монтировании компонента
   useEffect(() => {
     fetchPoints();
   }, []);
 
-  // Обновляем маркеры при изменении точек или карты
-  useEffect(() => {
-    displayPoints();
-  }, [points, mapInstanceRef.current]);
-
-  const handleFilterChange = (category, name, checked) => {
-    setFilters(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [name]: checked
-      }
-    }))
+  const handleFilterChange = (category, name, value) => {
+    if (category === 'strainName') {
+      setFilters(prev => ({
+        ...prev,
+        strainName: value
+      }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        [category]: {
+          ...prev[category],
+          [name]: value
+        }
+      }));
+    }
   }
 
   const handleDateRangeSelect = (range) => {
@@ -393,91 +452,116 @@ const Map = ({ user }) => {
           
           <div className="filter-section">
             <div className="filter-group">
-              <h3 className="filter-title">Генотип</h3>
+              <h3 className="filter-title">Штамм</h3>
+              <input
+                type="text"
+                placeholder="Поиск по названию"
+                value={filters.strainName}
+                onChange={(e) => handleFilterChange('strainName', '', e.target.value)}
+                className="filter-input"
+              />
+            </div>
+
+            <div className="filter-group">
+              <h3 className="filter-title">Жгутиковый антиген</h3>
               <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="genotype-indel1" 
-                    checked={filters.genotype.indel1}
-                    onChange={(e) => handleFilterChange('genotype', 'indel1', e.target.checked)}
+                    checked={filters.flagellarAntigen.A1}
+                    onChange={(e) => handleFilterChange('flagellarAntigen', 'A1', e.target.checked)}
                   />
-                  <span>INDEL-1</span>
+                  <span>A1</span>
                 </label>
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="genotype-indel2" 
-                    checked={filters.genotype.indel2}
-                    onChange={(e) => handleFilterChange('genotype', 'indel2', e.target.checked)}
+                    checked={filters.flagellarAntigen.A2}
+                    onChange={(e) => handleFilterChange('flagellarAntigen', 'A2', e.target.checked)}
                   />
-                  <span>INDEL-2</span>
+                  <span>A2</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.flagellarAntigen.B}
+                    onChange={(e) => handleFilterChange('flagellarAntigen', 'B', e.target.checked)}
+                  />
+                  <span>B</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.flagellarAntigen.UNDEFINED}
+                    onChange={(e) => handleFilterChange('flagellarAntigen', 'UNDEFINED', e.target.checked)}
+                  />
+                  <span>Не определен</span>
                 </label>
               </div>
             </div>
-            
+
             <div className="filter-group">
-              <h3 className="filter-title">Гены резистентности</h3>
+              <h3 className="filter-title">Мукоидный фенотип</h3>
               <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="resistance-blaVIM" 
-                    checked={filters.resistanceGenes.blaVIM}
-                    onChange={(e) => handleFilterChange('resistanceGenes', 'blaVIM', e.target.checked)}
+                    checked={filters.mucoidPhenotype['mutant']}
+                    onChange={(e) => handleFilterChange('mucoidPhenotype', 'mutant', e.target.checked)}
                   />
-                  <span>blaVIM</span>
+                  <span>Mutant</span>
                 </label>
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="resistance-blaNDM" 
-                    checked={filters.resistanceGenes.blaNDM}
-                    onChange={(e) => handleFilterChange('resistanceGenes', 'blaNDM', e.target.checked)}
+                    checked={filters.mucoidPhenotype['wild type']}
+                    onChange={(e) => handleFilterChange('mucoidPhenotype', 'wild type', e.target.checked)}
                   />
-                  <span>blaNDM</span>
-                </label>
-                <label className="filter-checkbox">
-                  <input 
-                    type="checkbox" 
-                    name="resistance-carbapenems" 
-                    checked={filters.resistanceGenes.carbapenems}
-                    onChange={(e) => handleFilterChange('resistanceGenes', 'carbapenems', e.target.checked)}
-                  />
-                  <span>карбапенемазы</span>
+                  <span>wild type</span>
                 </label>
               </div>
             </div>
-            
+
             <div className="filter-group">
-              <h3 className="filter-title">Источник</h3>
+              <h3 className="filter-title">ExoS</h3>
               <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="source-blood" 
-                    checked={filters.source.blood}
-                    onChange={(e) => handleFilterChange('source', 'blood', e.target.checked)}
+                    checked={filters.exoS['+']}
+                    onChange={(e) => handleFilterChange('exoS', '+', e.target.checked)}
                   />
-                  <span>Кровь</span>
+                  <span>+</span>
                 </label>
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="source-sputum" 
-                    checked={filters.source.sputum}
-                    onChange={(e) => handleFilterChange('source', 'sputum', e.target.checked)}
+                    checked={filters.exoS['-']}
+                    onChange={(e) => handleFilterChange('exoS', '-', e.target.checked)}
                   />
-                  <span>Мокрота</span>
+                  <span>-</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="filter-group">
+              <h3 className="filter-title">ExoU</h3>
+              <div className="filter-checkboxes">
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.exoU['+']}
+                    onChange={(e) => handleFilterChange('exoU', '+', e.target.checked)}
+                  />
+                  <span>+</span>
                 </label>
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    name="source-water" 
-                    checked={filters.source.water}
-                    onChange={(e) => handleFilterChange('source', 'water', e.target.checked)}
+                    checked={filters.exoU['-']}
+                    onChange={(e) => handleFilterChange('exoU', '-', e.target.checked)}
                   />
-                  <span>Вода</span>
+                  <span>-</span>
                 </label>
               </div>
             </div>
@@ -553,3 +637,4 @@ Map.propTypes = {
 }
 
 export default Map;
+
