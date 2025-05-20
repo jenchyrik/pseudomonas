@@ -11,6 +11,7 @@ import AddStrainModal from './AddStrainModal';
 import axios from 'axios';
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
 import 'leaflet.markercluster';
+import * as XLSX from 'xlsx';
 
 // Исправляем проблему с иконками маркеров
 let DefaultIcon = L.icon({
@@ -419,6 +420,54 @@ const Map = ({ user }) => {
     }
   }, []);
 
+  const handleExportToExcel = () => {
+    // Подготавливаем данные для экспорта
+    const exportData = filteredPoints.map(point => ({
+      'Название штамма': point.strainName,
+      'CRISPR тип': point.crisprType,
+      'Indel генотип': point.indelGenotype,
+      'Серогруппа': point.serogroup,
+      'Тип жгутикового антигена': point.flagellarAntigen,
+      'Мукоидный фенотип': point.mucoidPhenotype,
+      'ExoS': point.exoS,
+      'ExoU': point.exoU,
+      'Дата': new Date(point.date).toLocaleDateString(),
+      'Объект выделения': point.isolationObject,
+      'Широта': point.latitude,
+      'Долгота': point.longitude
+    }));
+
+    // Создаем рабочую книгу Excel
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    // Устанавливаем ширину столбцов
+    const colWidths = [
+      { wch: 20 }, // Название штамма
+      { wch: 15 }, // CRISPR тип
+      { wch: 15 }, // Indel генотип
+      { wch: 15 }, // Серогруппа
+      { wch: 20 }, // Тип жгутикового антигена
+      { wch: 20 }, // Мукоидный фенотип
+      { wch: 10 }, // ExoS
+      { wch: 10 }, // ExoU
+      { wch: 15 }, // Дата
+      { wch: 20 }, // Объект выделения
+      { wch: 12 }, // Широта
+      { wch: 12 }  // Долгота
+    ];
+    ws['!cols'] = colWidths;
+
+    // Добавляем лист в книгу
+    XLSX.utils.book_append_sheet(wb, ws, 'Точки');
+
+    // Генерируем имя файла с текущей датой
+    const fileName = `points_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+    // Сохраняем файл
+    XLSX.writeFile(wb, fileName);
+  };
+
   return (
     <div className="map-wrapper">
       <div id="map"></div>
@@ -569,7 +618,10 @@ const Map = ({ user }) => {
         </div>
 
         <div className="panel-footer">
-          <button className="download-button">
+          <button 
+            className="download-button"
+            onClick={handleExportToExcel}
+          >
             <svg
               className="download-icon"
               viewBox="0 0 24 24"
