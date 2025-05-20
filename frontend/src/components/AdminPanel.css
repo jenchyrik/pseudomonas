@@ -245,7 +245,7 @@
   transform: translateY(-1px);
 }
 
-.modal-overlay {
+.admin-panel .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -259,7 +259,7 @@
   backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.admin-panel .modal-content {
   all: initial;
   box-sizing: border-box;
   background: white;
@@ -279,12 +279,12 @@
   border: 1px solid #eee;
 }
 
-.modal-content * {
+.admin-panel .modal-content * {
   box-sizing: border-box;
   max-width: 100%;
 }
 
-.modal-close {
+.admin-panel .modal-close {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -304,12 +304,12 @@
   transition: all 0.2s;
 }
 
-.modal-close:hover {
+.admin-panel .modal-close:hover {
   background: #f8f9fa;
   color: #333;
 }
 
-.modal-title {
+.admin-panel .modal-title {
   margin: 0 0 30px 0;
   padding: 0;
   font-size: 24px;
@@ -441,4 +441,101 @@ select:focus {
 .action-button.add:hover {
   background: #218838;
   transform: translateY(-1px);
+}
+
+/* Специфичные стили для таблицы точек */
+.points-container .admin-table {
+  font-size: 12px;
+}
+
+.points-container .admin-table th:nth-child(1),
+.points-container .admin-table td:nth-child(1) {
+  width: 50px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(2),
+.points-container .admin-table td:nth-child(2) {
+  width: 150px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(3),
+.points-container .admin-table td:nth-child(3) {
+  width: 50px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(4),
+.points-container .admin-table td:nth-child(4) {
+  width: 50px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(5),
+.points-container .admin-table td:nth-child(5) {
+  width: 100px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(6),
+.points-container .admin-table td:nth-child(6) {
+  width: 50px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(7),
+.points-container .admin-table td:nth-child(7) {
+  width: 100px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(8),
+.points-container .admin-table td:nth-child(8) {
+  width: 50px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(9),
+.points-container .admin-table td:nth-child(9) {
+  width: 50px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(10),
+.points-container .admin-table td:nth-child(10) {
+  width: 100px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(11),
+.points-container .admin-table td:nth-child(11) {
+  width: 100px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(12),
+.points-container .admin-table td:nth-child(12) {
+  width: 100px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(13),
+.points-container .admin-table td:nth-child(13) {
+  width: 100px;
+  text-align: center;
+}
+
+.points-container .admin-table th:nth-child(14),
+.points-container .admin-table td:nth-child(14) {
+  width: 100px;
+  text-align: center;
+}
+
+/* Add equal width for action buttons in points table */
+.points-container .action-button.edit,
+.points-container .action-button.delete {
+  width: 100px;
+  display: inline-block;
+  text-align: center;
 }

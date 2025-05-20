@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import './AdminPanel.css'
-import ErrorLogs from './admin/ErrorLogs'
 import LoginHistory from './admin/LoginHistory'
+import ErrorLogs from './admin/ErrorLogs'
+import PointsManagement from './admin/PointsManagement'
 import UserManagement from './admin/UserManagement'
+import './AdminPanel.css'
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('users')
@@ -11,6 +12,7 @@ export default function AdminPanel() {
     { id: 'users', label: 'Пользователи' },
     { id: 'logins', label: 'История входов' },
     { id: 'errors', label: 'Логи ошибок' },
+    { id: 'points', label: 'Точки' }
   ]
 
   const renderContent = () => {
@@ -21,6 +23,8 @@ export default function AdminPanel() {
         return <LoginHistory />
       case 'errors':
         return <ErrorLogs />
+      case 'points':
+        return <PointsManagement />
       default:
         return null
     }
@@ -29,7 +33,6 @@ export default function AdminPanel() {
   return (
     <div className="admin-panel">
       <h1 className="admin-title">Панель администратора</h1>
-
       <div className="admin-tabs">
         {tabs.map(tab => (
           <button
@@ -41,8 +44,9 @@ export default function AdminPanel() {
           </button>
         ))}
       </div>
-
-      <div className="admin-content">{renderContent()}</div>
+      <div className="admin-content">
+        {renderContent()}
+      </div>
     </div>
   )
 }
