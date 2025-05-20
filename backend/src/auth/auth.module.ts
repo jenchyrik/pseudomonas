@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { JwtStrategy } from './jwt.strategy'
 import { LoginHistory } from './login-history.entity'
+import { ErrorLog } from '../logs/error-log.entity'
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { LoginHistory } from './login-history.entity'
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, LoginHistory]),
+    TypeOrmModule.forFeature([User, LoginHistory, ErrorLog]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

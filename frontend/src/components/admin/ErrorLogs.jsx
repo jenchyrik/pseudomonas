@@ -44,11 +44,7 @@ export default function ErrorLogs() {
   }
 
   return (
-    <div className="error-logs-container">
-      <div className="admin-header">
-        <h2>Журнал ошибок</h2>
-      </div>
-
+    <div className="error-logs-container" style={{ paddingBottom: '10px' }}>
       <div className="table-container">
         <table className="admin-table">
           <thead>
@@ -78,16 +74,16 @@ export default function ErrorLogs() {
             <button className="modal-close" onClick={() => setSelectedLog(null)}>×</button>
             <h3 className="modal-title">Детали ошибки</h3>
             <div className="error-details">
-            <p><strong>ID:</strong> {selectedLog.id}</p>
-            <p><strong>Уровень:</strong> {selectedLog.level}</p>
-            <p><strong>Сообщение:</strong> {selectedLog.message}</p>
-            <p><strong>Дата и время:</strong> {new Date(selectedLog.timestamp).toLocaleString()}</p>
-            {selectedLog.stack && (
+              <p><strong>ID:</strong> {selectedLog.id}</p>
+              <p><strong>Уровень:</strong> {selectedLog.level}</p>
+              <p><strong>Сообщение:</strong> {selectedLog.message}</p>
+              <p><strong>Дата и время:</strong> {new Date(selectedLog.timestamp).toLocaleString()}</p>
+              {selectedLog.stack && (
                 <div className="stack-trace">
-                <p><strong>Стек вызовов:</strong></p>
-                <pre>{selectedLog.stack}</pre>
-              </div>
-            )}
+                  <p><strong>Стек вызовов:</strong></p>
+                  <pre>{selectedLog.stack}</pre>
+                </div>
+              )}
             </div>
           </div>
         </div>

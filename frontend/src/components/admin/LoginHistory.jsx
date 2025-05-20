@@ -43,11 +43,7 @@ export default function LoginHistory() {
   }
 
   return (
-    <div className="login-history-container">
-      <div className="admin-header">
-        <h2>История входов</h2>
-      </div>
-
+    <div className="login-history-container" style={{ paddingBottom: '10px' }}>
       <div className="table-container">
         <table className="admin-table">
           <thead>

@@ -89,12 +89,13 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="users-container">
+    <div className="users-container" style={{ paddingBottom: '10px' }}>
       <div className="admin-header">
-        <h2>Управление пользователями</h2>
-        <button className="action-button edit" onClick={handleAddUser}>
-          Добавить пользователя
-        </button>
+        <div className="admin-actions">
+          <button className="action-button add" onClick={handleAddUser}>
+            Добавить пользователя
+          </button>
+        </div>
       </div>
 
       <div className="table-container">

@@ -7,6 +7,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { RegisterCredentialsDto } from './dto/register-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import { LoginHistory, LoginAction } from './login-history.entity';
+import { ErrorLog, ErrorLevel } from '../logs/error-log.entity';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,8 @@ export class AuthService {
     private userRepository: Repository<User>,
     @InjectRepository(LoginHistory)
     private loginHistoryRepository: Repository<LoginHistory>,
+    @InjectRepository(ErrorLog)
+    private errorLogRepository: Repository<ErrorLog>,
     private jwtService: JwtService,
   ) {}
 
@@ -53,6 +56,14 @@ export class AuthService {
     const user = await this.validateUser(email, password);
 
     if (!user) {
+      // Записываем ошибку в лог
+      const errorLog = this.errorLogRepository.create({
+        level: ErrorLevel.ERROR,
+        message: `Failed login attempt for email: ${email}`,
+        stack: `IP Address: ${ipAddress}`,
+      });
+      await this.errorLogRepository.save(errorLog);
+      
       throw new UnauthorizedException('Invalid credentials');
     }
 
