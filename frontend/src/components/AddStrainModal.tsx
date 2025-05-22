@@ -149,15 +149,17 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
 
             <div className="exotoxin-group">
               <div className="exotoxin-control">
-                <label>Экзотоксин S</label>
-                <div className="radio-group">
+                <label htmlFor="exoS">Экзотоксин S</label>
+                <div className="radio-group" role="radiogroup" aria-labelledby="exoS">
                   <label className="radio-label">
                     <input
                       type="radio"
                       name="exoS"
+                      id="exoS-positive"
                       value={ExoStatus.POSITIVE}
                       checked={formData.exoS === ExoStatus.POSITIVE}
                       onChange={handleRadioChange('exoS')}
+                      aria-label="Экзотоксин S положительный"
                     />
                     <span>+</span>
                   </label>
@@ -165,9 +167,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                     <input
                       type="radio"
                       name="exoS"
+                      id="exoS-negative"
                       value={ExoStatus.NEGATIVE}
                       checked={formData.exoS === ExoStatus.NEGATIVE}
                       onChange={handleRadioChange('exoS')}
+                      aria-label="Экзотоксин S отрицательный"
                     />
                     <span>-</span>
                   </label>
@@ -175,7 +179,7 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
               </div>
 
               <div className="exotoxin-control">
-                <label>Экзотоксин U</label>
+                <label htmlFor="exoU">Экзотоксин U</label>
                 <div className="radio-group">
                   <label className="radio-label">
                     <input

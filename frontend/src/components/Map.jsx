@@ -496,19 +496,21 @@ const Map = ({ user }) => {
   };
 
   return (
-    <div className="map-wrapper">
-      <div id="map"></div>
+    <section className="map-wrapper" role="region" aria-label="Карта с данными">
+      <div id="map" role="application" aria-label="Интерактивная карта"></div>
 
       {user?.role === 'editor' && (
         <button 
           className="add-data-button"
           onClick={handleAddDataClick}
+          aria-label="Добавить новые данные на карту"
         >
           <svg
             className="download-icon"
             viewBox="0 0 24 24"
             width="16"
             height="16"
+            aria-hidden="true"
           >
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
           </svg>
@@ -516,17 +518,17 @@ const Map = ({ user }) => {
         </button>
       )}
 
-      <div className="map-control-panel">
-        <div className="panel-header">
+      <aside className="map-control-panel" role="complementary" aria-label="Панель управления картой">
+        <header className="panel-header">
           <h2 className="system-title">ГИС по P.aeruginosa</h2>
-        </div>
+        </header>
 
-        <div className="panel-content">
+        <main className="panel-content">
           <DateRangePicker
             onRangeSelect={handleDateRangeSelect}
           />
           
-          <div className="filter-section">
+          <section className="filter-section" aria-label="Фильтры данных">
             <div className="filter-group">
               <h3 className="filter-title">Штамм</h3>
               <input
@@ -535,17 +537,19 @@ const Map = ({ user }) => {
                 value={filters.strainName}
                 onChange={(e) => handleFilterChange('strainName', '', e.target.value)}
                 className="filter-input"
+                aria-label="Поиск по названию штамма"
               />
             </div>
 
             <div className="filter-group">
               <h3 className="filter-title">Жгутиковый антиген</h3>
-              <div className="filter-checkboxes">
+              <div className="filter-checkboxes" role="group" aria-label="Выбор жгутикового антигена">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.flagellarAntigen.A1}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'A1', e.target.checked)}
+                    aria-label="Жгутиковый антиген A1"
                   />
                   <span>A1</span>
                 </label>
@@ -554,6 +558,7 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen.A2}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'A2', e.target.checked)}
+                    aria-label="Жгутиковый антиген A2"
                   />
                   <span>A2</span>
                 </label>
@@ -562,50 +567,22 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen.B}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'B', e.target.checked)}
+                    aria-label="Жгутиковый антиген B"
                   />
                   <span>B</span>
-                </label>
-                <label className="filter-checkbox">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.flagellarAntigen['не определен']}
-                    onChange={(e) => handleFilterChange('flagellarAntigen', 'не определен', e.target.checked)}
-                  />
-                  <span>Не определен</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="filter-group">
-              <h3 className="filter-title">Мукоидный фенотип</h3>
-              <div className="filter-checkboxes">
-                <label className="filter-checkbox">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.mucoidPhenotype['mutant']}
-                    onChange={(e) => handleFilterChange('mucoidPhenotype', 'mutant', e.target.checked)}
-                  />
-                  <span>Mutant</span>
-                </label>
-                <label className="filter-checkbox">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.mucoidPhenotype['wild type']}
-                    onChange={(e) => handleFilterChange('mucoidPhenotype', 'wild type', e.target.checked)}
-                  />
-                  <span>wild type</span>
                 </label>
               </div>
             </div>
 
             <div className="filter-group">
               <h3 className="filter-title">ExoS</h3>
-              <div className="filter-checkboxes">
+              <div className="filter-checkboxes" role="group" aria-label="Выбор ExoS">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.exoS['+']}
                     onChange={(e) => handleFilterChange('exoS', '+', e.target.checked)}
+                    aria-label="ExoS положительный"
                   />
                   <span>+</span>
                 </label>
@@ -614,6 +591,7 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.exoS['-']}
                     onChange={(e) => handleFilterChange('exoS', '-', e.target.checked)}
+                    aria-label="ExoS отрицательный"
                   />
                   <span>-</span>
                 </label>
@@ -622,12 +600,13 @@ const Map = ({ user }) => {
 
             <div className="filter-group">
               <h3 className="filter-title">ExoU</h3>
-              <div className="filter-checkboxes">
+              <div className="filter-checkboxes" role="group" aria-label="Выбор ExoU">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.exoU['+']}
                     onChange={(e) => handleFilterChange('exoU', '+', e.target.checked)}
+                    aria-label="ExoU положительный"
                   />
                   <span>+</span>
                 </label>
@@ -636,13 +615,14 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.exoU['-']}
                     onChange={(e) => handleFilterChange('exoU', '-', e.target.checked)}
+                    aria-label="ExoU отрицательный"
                   />
                   <span>-</span>
                 </label>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
 
         <div className="panel-footer">
           <button 
@@ -680,7 +660,7 @@ const Map = ({ user }) => {
             Сохранить изображение
           </button>
         </div>
-      </div>
+      </aside>
 
       <SaveImageModal
         isOpen={isSaveModalOpen}
@@ -718,7 +698,7 @@ const Map = ({ user }) => {
           </button>
         </div>
       )}
-    </div>
+    </section>
   )
 }
 

@@ -14,26 +14,25 @@ export default function Header({ user, onLogout }) {
   const isLoginPage = location.pathname === '/login'
 
   return (
-    <header className="header">
+    <header className="header" role="banner">
       <div className="header-left">
         <img
           src="/rospotrebnadzor_emb_n9349.png"
-          alt="Логотип РПН"
+          alt="Логотип Роспотребнадзора"
           className="header-logo"
         />
         <div className="institute-name-wrapper">
-          <span className="institute-name">
+          <h1 className="institute-name">
             ФКУЗ РОСТОВСКИЙ-НА-ДОНУ
             <br />
             ПРОТИВОЧУМНЫЙ ИНСТИТУТ
             <br />
             РОСПОТРЕБНАДЗОРА
-          </span>
+          </h1>
         </div>
       </div>
 
-      {/* Правый блок: навигация */}
-      <div className="header-right">
+      <nav className="header-right" role="navigation" aria-label="Основная навигация">
         <ul className="header-nav">
           <li>
             <a
@@ -67,10 +66,14 @@ export default function Header({ user, onLogout }) {
           </li>
           {user ? (
             <>
-              <li className="divider"></li>
+              <li className="divider" aria-hidden="true"></li>
               <li className="user-menu">
-                <span className="username">{user.email}</span>
-                <button className="logout-button" onClick={onLogout}>
+                <span className="username" aria-label={`Пользователь: ${user.email}`}>{user.email}</span>
+                <button 
+                  className="logout-button" 
+                  onClick={onLogout}
+                  aria-label="Выйти из системы"
+                >
                   Выйти
                 </button>
               </li>
@@ -78,14 +81,14 @@ export default function Header({ user, onLogout }) {
           ) : (
             !isLoginPage && (
               <li>
-                <Link to="/login" className="login-button">
+                <Link to="/login" className="login-button" aria-label="Войти в систему">
                   Войти
                 </Link>
               </li>
             )
           )}
         </ul>
-      </div>
+      </nav>
     </header>
   )
 }

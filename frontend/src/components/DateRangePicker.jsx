@@ -159,39 +159,55 @@ export default function DateRangePicker({ onRangeSelect }) {
               >
                 ←
               </button>
-              <div className="year-selector">
+              <div className="year-selector" role="group" aria-label="Выбор года">
                 <div className="year-selector-inner" ref={yearSelectorRef}>
-                  <span
+                  <button
+                    type="button"
                     className="adjacent-year far"
                     onClick={() => handleYearClick(currentYear - 2)}
+                    aria-label={`Выбрать ${currentYear - 2} год`}
                   >
                     {currentYear - 2}
-                  </span>
-                  <span
+                  </button>
+                  <button
+                    type="button"
                     className="adjacent-year prev"
                     onClick={() => handleYearClick(currentYear - 1)}
+                    aria-label={`Выбрать ${currentYear - 1} год`}
                   >
                     {currentYear - 1}
-                  </span>
-                  <span className="current-year">{currentYear}</span>
-                  <span
+                  </button>
+                  <button
+                    type="button"
+                    className="current-year"
+                    aria-label={`Текущий год: ${currentYear}`}
+                    aria-current="true"
+                  >
+                    {currentYear}
+                  </button>
+                  <button
+                    type="button"
                     className="adjacent-year next"
                     onClick={() => handleYearClick(currentYear + 1)}
+                    aria-label={`Выбрать ${currentYear + 1} год`}
                   >
                     {currentYear + 1}
-                  </span>
-                  <span
+                  </button>
+                  <button
+                    type="button"
                     className="adjacent-year far"
                     onClick={() => handleYearClick(currentYear + 2)}
+                    aria-label={`Выбрать ${currentYear + 2} год`}
                   >
                     {currentYear + 2}
-                  </span>
+                  </button>
                 </div>
               </div>
               <button
                 onClick={() => handleYearClick(currentYear + 1)}
                 className="year-nav-button"
                 disabled={isAnimating}
+                aria-label="Следующий год"
               >
                 →
               </button>

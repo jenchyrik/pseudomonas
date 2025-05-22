@@ -147,38 +147,46 @@ export default function UserManagement() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay">
+        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
           <div className="modal-content">
-            <button className="modal-close" onClick={() => setShowModal(false)}>
+            <button 
+              className="modal-close" 
+              onClick={() => setShowModal(false)}
+              aria-label="Закрыть окно"
+            >
               ×
             </button>
-            <h3 className="modal-title">
+            <h3 id="modal-title" className="modal-title">
               {modalMode === 'add' && 'Добавить пользователя'}
               {modalMode === 'edit' && 'Редактировать пользователя'}
               {modalMode === 'password' && 'Изменить пароль'}
             </h3>
-            <form className="admin-form" onSubmit={handleSubmit}>
+            <form className="admin-form" onSubmit={handleSubmit} role="form" aria-label="Форма управления пользователем">
               {(modalMode === 'add' || modalMode === 'edit') && (
                 <>
                   <div className="form-group">
-                    <label>Email</label>
+                    <label htmlFor="user-email">Email</label>
                     <input
                       type="email"
+                      id="user-email"
                       value={formData.email}
                       onChange={e =>
                         setFormData({ ...formData, email: e.target.value })
                       }
                       required
+                      aria-required="true"
                     />
                   </div>
                   <div className="form-group">
-                    <label>Роль</label>
+                    <label htmlFor="user-role">Роль</label>
                     <select
+                      id="user-role"
                       value={formData.role}
                       onChange={e =>
                         setFormData({ ...formData, role: e.target.value })
                       }
                       required
+                      aria-required="true"
                     >
                       <option value="user">Пользователь</option>
                       <option value="editor">Редактор</option>
@@ -189,18 +197,28 @@ export default function UserManagement() {
               )}
               {(modalMode === 'add' || modalMode === 'password') && (
                 <div className="form-group">
-                  <label>Пароль</label>
+                  <label htmlFor="user-password">Пароль</label>
                   <input
                     type="password"
+                    id="user-password"
                     value={formData.password}
                     onChange={e =>
                       setFormData({ ...formData, password: e.target.value })
                     }
                     required
+                    aria-required="true"
                   />
                 </div>
               )}
-              <button type="submit" className="action-button edit">
+              <button 
+                type="submit" 
+                className="action-button edit"
+                aria-label={
+                  modalMode === 'add' ? 'Добавить пользователя' :
+                  modalMode === 'edit' ? 'Сохранить изменения' :
+                  'Изменить пароль'
+                }
+              >
                 {modalMode === 'add' && 'Добавить'}
                 {modalMode === 'edit' && 'Сохранить'}
                 {modalMode === 'password' && 'Изменить пароль'}
