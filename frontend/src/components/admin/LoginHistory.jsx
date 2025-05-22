@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { getApiUrl } from '../../config/api'
-import '../../styles/admin.css'
 
 export default function LoginHistory() {
   const [loginHistory, setLoginHistory] = useState([])

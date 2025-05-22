@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getUsers, createUser, updateUser, deleteUser, changePassword } from '../../services/api'
-import '../../styles/admin.css'
+import '../../styles/components/_admin.scss'
 
 export default function UserManagement() {
   const [users, setUsers] = useState([])

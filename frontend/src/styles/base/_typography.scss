@@ -1,0 +1,45 @@
+a {
+  font-weight: 500;
+  color: $primary-color;
+  text-decoration: inherit;
+
+  &:hover {
+    color: $primary-hover;
+  }
+}
+
+button {
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  padding: $spacing-small $spacing-base;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: $background-dark;
+  cursor: pointer;
+  transition: border-color $transition-base;
+
+  &:hover {
+    border-color: $primary-color;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: $text-dark;
+    background-color: $background-light;
+  }
+
+  a:hover {
+    color: $primary-hover;
+  }
+
+  button {
+    background-color: #f9f9f9;
+  }
+} 

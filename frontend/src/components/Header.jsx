@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { Link, useLocation } from 'react-router-dom'
-import '../styles/Header.css'
+import '../styles/components/_header.scss'
 
 Header.propTypes = {
   user: PropTypes.shape({

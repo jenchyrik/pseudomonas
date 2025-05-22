@@ -14,18 +14,20 @@ import 'leaflet.markercluster';
 import * as XLSX from 'xlsx';
 import AddDataSelectionModal from './AddDataSelectionModal';
 import ImportTableModal from './ImportTableModal';
+import '../styles/components/_map.scss';
 
 // Исправляем проблему с иконками маркеров
-let DefaultIcon = L.icon({
-  iconUrl: '/images/marker-icon.png',
-  shadowUrl: '/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+import icon from 'leaflet/dist/images/marker-icon.png'
+import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 
-L.Marker.prototype.options.icon = DefaultIcon;
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+})
+
+L.Marker.prototype.options.icon = DefaultIcon
 
 const Map = ({ user }) => {
   const mapRef = useRef(null);
@@ -570,6 +572,15 @@ const Map = ({ user }) => {
                     aria-label="Жгутиковый антиген B"
                   />
                   <span>B</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.flagellarAntigen['не определен']}
+                    onChange={(e) => handleFilterChange('flagellarAntigen', 'не определен', e.target.checked)}
+                    aria-label="Жгутиковый антиген не определен"
+                  />
+                  <span>не определен</span>
                 </label>
               </div>
             </div>
