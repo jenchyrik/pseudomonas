@@ -12,7 +12,7 @@ export default function AdminPanel() {
     { id: 'users', label: 'Пользователи' },
     { id: 'logins', label: 'История входов' },
     { id: 'errors', label: 'Логи ошибок' },
-    { id: 'points', label: 'Точки' }
+    { id: 'points', label: 'Штаммы' }
   ]
 
   const renderContent = () => {

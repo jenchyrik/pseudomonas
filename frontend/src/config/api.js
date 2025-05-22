@@ -13,7 +13,8 @@ export const API_ENDPOINTS = {
     getAll: '/points',
     getOne: '/points/:id',
     update: '/points/:id',
-    delete: '/points/:id'
+    delete: '/points/:id',
+    import: '/points/import'
   }
 }
 

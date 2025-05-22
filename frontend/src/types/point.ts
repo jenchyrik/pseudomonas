@@ -16,8 +16,9 @@ export enum FlagellarAntigen {
 }
 
 export interface Point {
-  id: number;
+  id?: number;
   strainName: string;
+  name?: string;
   crisprType: string;
   indelGenotype: string;
   serogroup: string;
@@ -27,6 +28,8 @@ export interface Point {
   exoU: ExoStatus;
   latitude: number;
   longitude: number;
-  date: Date;
+  date: string;
   isolationObject: string;
+  createdAt: string;
+  createdBy: string;
 } 

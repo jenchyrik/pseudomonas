@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/user.entity';
+import { ImportPointsDto } from './dto/import-points.dto';
 
 @Controller('points')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -16,6 +17,12 @@ export class PointsController {
   @Roles(UserRole.EDITOR, UserRole.ADMIN)
   create(@Body() createPointDto: CreatePointDto) {
     return this.pointsService.create(createPointDto);
+  }
+
+  @Post('import')
+  @Roles(UserRole.EDITOR, UserRole.ADMIN)
+  import(@Body() importPointsDto: ImportPointsDto) {
+    return this.pointsService.import(importPointsDto.points);
   }
 
   @Get()

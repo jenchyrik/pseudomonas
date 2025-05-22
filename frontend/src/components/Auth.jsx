@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { loginUser } from '../services/api'
 import './Auth.css'
 
@@ -20,8 +21,12 @@ export default function Auth({ onAuth }) {
     setIsLoading(true)
 
     try {
+      console.log('Attempting login with email:', email)
       const data = await loginUser(email, password)
+      console.log('Login response:', data)
       localStorage.setItem('token', data.access_token)
+      localStorage.setItem('userEmail', email)
+      console.log('Saved userEmail to localStorage:', email)
       onAuth(data.user)
     } catch (err) {
       console.error('Ошибка авторизации:', err)
@@ -71,4 +76,8 @@ export default function Auth({ onAuth }) {
       </div>
     </div>
   )
+}
+
+Auth.propTypes = {
+  onAuth: PropTypes.func.isRequired
 }

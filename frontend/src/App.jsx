@@ -6,9 +6,13 @@ import Auth from './components/Auth'
 import Header from './components/Header'
 import Map from './components/Map'
 import { API_ENDPOINTS, getApiUrl } from './config/api'
+import { fetchWithAuth } from './services/api'
 
 export default function App() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user')
+    return savedUser ? JSON.parse(savedUser) : null
+  })
   const [loading, setLoading] = useState(true)
 
   // Проверяем, если пользователь уже авторизован
@@ -22,21 +26,22 @@ export default function App() {
           return
         }
 
-        const response = await fetch(getApiUrl(API_ENDPOINTS.auth.protected), {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        })
+        const response = await fetchWithAuth(getApiUrl(API_ENDPOINTS.auth.protected))
 
         if (response.ok) {
           const data = await response.json()
           setUser(data.user)
+          localStorage.setItem('user', JSON.stringify(data.user))
         } else {
           localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          setUser(null)
         }
       } catch (error) {
         console.error('Ошибка при проверке авторизации:', error)
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        setUser(null)
       } finally {
         setLoading(false)
       }
@@ -48,6 +53,7 @@ export default function App() {
   // Функция для авторизации пользователя
   const handleAuth = userData => {
     setUser(userData)
+    localStorage.setItem('user', JSON.stringify(userData))
   }
 
   // Функция для выхода из системы
@@ -56,11 +62,8 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       if (token) {
-        await fetch(getApiUrl(API_ENDPOINTS.auth.logout), {
+        await fetchWithAuth(getApiUrl(API_ENDPOINTS.auth.logout), {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
         })
       }
     } catch (error) {
@@ -68,6 +71,8 @@ export default function App() {
     } finally {
       setUser(null)
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      localStorage.removeItem('userEmail')
     }
   }
 

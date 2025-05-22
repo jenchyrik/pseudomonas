@@ -21,7 +21,8 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
     latitude: '',
     longitude: '',
     date: new Date().toISOString().split('T')[0],
-    isolationObject: ''
+    isolationObject: '',
+    createdBy: localStorage.getItem('userEmail') || 'unknown'
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -41,7 +42,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    console.log('Submitting form with data:', formData);
+    onSubmit({
+      ...formData,
+      createdBy: localStorage.getItem('userEmail') || 'unknown'
+    });
     onClose();
   };
 
@@ -107,7 +112,7 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
             </div>
 
             <div className="form-group">
-              <label htmlFor="flagellarAntigen">Тип жгутикового антигена</label>
+              <label htmlFor="flagellarAntigen">Жгутиковый антиген</label>
               <select
                 id="flagellarAntigen"
                 name="flagellarAntigen"
@@ -142,7 +147,7 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
               </select>
             </div>
 
-            <div className="form-group exotoxin-group">
+            <div className="exotoxin-group">
               <div className="exotoxin-control">
                 <label>Экзотоксин S</label>
                 <div className="radio-group">

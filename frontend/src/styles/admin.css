@@ -1,13 +1,13 @@
 .login-history-container,
 .users-container,
 .error-logs-container {
-  height: calc(100vh - 200px);
+  height: calc(100vh - 300px);
   display: flex;
   flex-direction: column;
 }
 
 .table-container {
-  height: 500px;
+  flex: 1;
   overflow-y: scroll;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -71,4 +71,63 @@
 .users-container .table-container::-webkit-scrollbar-thumb:hover,
 .error-logs-container .table-container::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Специфичные стили для таблицы пользователей */
+.users-container .admin-table th:nth-child(1),
+.users-container .admin-table td:nth-child(1) {
+  width: 60px;
+  text-align: center;
+}
+
+.users-container .admin-table th:nth-child(2),
+.users-container .admin-table td:nth-child(2) {
+  width: 200px;
+  text-align: left;
+}
+
+.users-container .admin-table th:nth-child(3),
+.users-container .admin-table td:nth-child(3) {
+  width: 120px;
+  text-align: center;
+}
+
+.users-container .admin-table th:nth-child(4),
+.users-container .admin-table td:nth-child(4) {
+  width: 250px;
+  text-align: center;
+}
+
+.action-button.details {
+  background: #17a2b8;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 1000px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  margin-right: 5px;
+}
+
+.action-button.details:hover {
+  background: #138496;
+  transform: translateY(-1px);
+}
+
+.details-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.details-content p {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.details-content strong {
+  color: #333;
+  margin-right: 10px;
 } 

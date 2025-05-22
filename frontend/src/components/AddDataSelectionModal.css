@@ -1,0 +1,85 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 60px;
+}
+
+.selection-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  text-align: center;
+}
+
+.selection-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.selection-button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 1000px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: linear-gradient(to right, #6a7677, #565e5e);
+  color: white;
+}
+
+.selection-button:hover {
+  background: linear-gradient(to right, #778586, #667272);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+.selection-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 1000px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.close-button:hover {
+  background-color: #e9ecef;
+} 

@@ -88,8 +88,10 @@ export default function SaveImageModal({ isOpen, onClose, mapInstance }) {
             '.leaflet-tile, .leaflet-marker-icon, .leaflet-popup, .leaflet-tooltip'
           )
           mapElements.forEach(el => {
-            el.style.borderRadius = '0'
-            el.style.overflow = 'hidden'
+            if (!el.classList.contains('leaflet-marker-icon')) {
+              el.style.borderRadius = '0'
+              el.style.overflow = 'hidden'
+            }
           })
 
           const zoomControls = element.querySelectorAll(

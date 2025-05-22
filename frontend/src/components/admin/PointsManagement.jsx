@@ -22,6 +22,8 @@ export default function PointsManagement() {
     date: '',
     isolationObject: ''
   })
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedPointDetails, setSelectedPointDetails] = useState(null);
 
   useEffect(() => {
     fetchPoints()
@@ -90,6 +92,15 @@ export default function PointsManagement() {
     }
   }
 
+  const isDuplicate = (newPoint) => {
+    return points.some(point => 
+      point.strainName === newPoint.strainName &&
+      point.latitude === parseFloat(newPoint.latitude) &&
+      point.longitude === parseFloat(newPoint.longitude) &&
+      new Date(point.date).toISOString().split('T')[0] === newPoint.date
+    );
+  };
+
   const handleSubmit = async e => {
     e.preventDefault()
     try {
@@ -98,7 +109,14 @@ export default function PointsManagement() {
         ...formData,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-        date: formData.date ? new Date(formData.date).toISOString() : null
+        date: formData.date ? new Date(formData.date).toISOString() : null,
+        createdBy: localStorage.getItem('userEmail') || 'unknown'
+      }
+
+      // Проверяем на дубликат
+      if (isDuplicate(formattedData)) {
+        setError('Штамм с такими данными уже существует');
+        return;
       }
 
       const response = await fetch(getApiUrl(`/points/${selectedPoint.id}`), {
@@ -123,6 +141,11 @@ export default function PointsManagement() {
     }
   }
 
+  const handleShowDetails = (point) => {
+    setSelectedPointDetails(point);
+    setShowDetailsModal(true);
+  };
+
   if (loading) {
     return <div className="loading">Загрузка...</div>
   }
@@ -139,17 +162,8 @@ export default function PointsManagement() {
             <tr>
               <th>ID</th>
               <th>Штамм</th>
-              <th>CRISPR</th>
-              <th>Indel</th>
-              <th>Серогруппа</th>
-              <th>H-Ag</th>
-              <th>Мукоидный фенотип</th>
-              <th>ExoS</th>
-              <th>ExoU</th>
-              <th>Широта</th>
-              <th>Долгота</th>
               <th>Дата</th>
-              <th>Объект выделения</th>
+              <th>Автор</th>
               <th>Действия</th>
             </tr>
           </thead>
@@ -158,18 +172,15 @@ export default function PointsManagement() {
               <tr key={point.id}>
                 <td>{point.id}</td>
                 <td>{point.strainName}</td>
-                <td>{point.crisprType}</td>
-                <td>{point.indelGenotype}</td>
-                <td>{point.serogroup}</td>
-                <td>{point.flagellarAntigen}</td>
-                <td>{point.mucoidPhenotype}</td>
-                <td>{point.exoS}</td>
-                <td>{point.exoU}</td>
-                <td>{point.latitude}</td>
-                <td>{point.longitude}</td>
                 <td>{new Date(point.date).toLocaleDateString()}</td>
-                <td>{point.isolationObject}</td>
+                <td>{point.createdBy}</td>
                 <td>
+                  <button
+                    className="action-button details"
+                    onClick={() => handleShowDetails(point)}
+                  >
+                    Подробнее
+                  </button>
                   <button
                     className="action-button edit"
                     onClick={() => handleEditPoint(point)}
@@ -188,6 +199,34 @@ export default function PointsManagement() {
           </tbody>
         </table>
       </div>
+
+      {showDetailsModal && selectedPointDetails && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="modal-close" onClick={() => setShowDetailsModal(false)}>
+              ×
+            </button>
+            <h3 className="modal-title">Подробная информация о штамме</h3>
+            <div className="details-content">
+              <p><strong>ID:</strong> {selectedPointDetails.id}</p>
+              <p><strong>Название штамма:</strong> {selectedPointDetails.strainName}</p>
+              <p><strong>CRISPR тип:</strong> {selectedPointDetails.crisprType}</p>
+              <p><strong>Indel генотип:</strong> {selectedPointDetails.indelGenotype}</p>
+              <p><strong>Серогруппа:</strong> {selectedPointDetails.serogroup}</p>
+              <p><strong>Жгутиковый антиген:</strong> {selectedPointDetails.flagellarAntigen}</p>
+              <p><strong>Мукоидный фенотип:</strong> {selectedPointDetails.mucoidPhenotype}</p>
+              <p><strong>ExoS:</strong> {selectedPointDetails.exoS}</p>
+              <p><strong>ExoU:</strong> {selectedPointDetails.exoU}</p>
+              <p><strong>Широта:</strong> {selectedPointDetails.latitude}</p>
+              <p><strong>Долгота:</strong> {selectedPointDetails.longitude}</p>
+              <p><strong>Дата выделения:</strong> {new Date(selectedPointDetails.date).toLocaleDateString()}</p>
+              <p><strong>Объект выделения:</strong> {selectedPointDetails.isolationObject}</p>
+              <p><strong>Добавлено:</strong> {new Date(selectedPointDetails.createdAt).toLocaleString()}</p>
+              <p><strong>Добавил:</strong> {selectedPointDetails.createdBy}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="modal-overlay">
@@ -331,7 +370,7 @@ export default function PointsManagement() {
                   required
                 />
               </div>
-              <button type="submit" className="action-button edit">
+              <button type="submit" className="action-button edit" style={{ width: '100%', marginTop: 'auto' }}>
                 Сохранить
               </button>
             </form>

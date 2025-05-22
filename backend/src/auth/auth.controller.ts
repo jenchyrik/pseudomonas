@@ -7,10 +7,15 @@ import { RegisterCredentialsDto } from './dto/register-credentials.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Request } from 'express';
+import { JwtPayload } from './jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private jwtService: JwtService
+  ) {}
 
   private getClientIp(request: Request): string {
     // Проверяем заголовки в порядке приоритета
@@ -54,6 +59,20 @@ export class AuthController {
     return this.authService.getLoginHistory();
   }
 
+  @Post('refresh')
+  @UseGuards(JwtAuthGuard)
+  async refreshToken(@Req() request: Request) {
+    const user = request.user as JwtPayload;
+    const payload: JwtPayload = { email: user.email, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        email: user.email,
+        role: user.role
+      }
+    };
+  }
+
   // Пример защищенного маршрута только для админов
   @Get('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -65,7 +84,13 @@ export class AuthController {
   // Пример защищенного маршрута для всех аутентифицированных пользователей
   @Get('protected')
   @UseGuards(JwtAuthGuard)
-  protectedRoute() {
-    return { message: 'This is a protected route!' };
+  protectedRoute(@Req() request: Request) {
+    const user = request.user as JwtPayload;
+    return {
+      user: {
+        email: user.email,
+        role: user.role
+      }
+    };
   }
 } 

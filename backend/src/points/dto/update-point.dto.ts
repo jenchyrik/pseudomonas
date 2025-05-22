@@ -49,4 +49,8 @@ export class UpdatePointDto {
   @IsString()
   @IsOptional()
   isolationObject?: string;
+
+  @IsString()
+  @IsOptional()
+  createdBy?: string;
 } 

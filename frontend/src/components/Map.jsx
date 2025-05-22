@@ -12,6 +12,8 @@ import axios from 'axios';
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
 import 'leaflet.markercluster';
 import * as XLSX from 'xlsx';
+import AddDataSelectionModal from './AddDataSelectionModal';
+import ImportTableModal from './ImportTableModal';
 
 // Исправляем проблему с иконками маркеров
 let DefaultIcon = L.icon({
@@ -33,6 +35,8 @@ const Map = ({ user }) => {
   const [points, setPoints] = useState([]);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [isAddStrainModalOpen, setIsAddStrainModalOpen] = useState(false);
+  const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
+  const [isImportTableModalOpen, setIsImportTableModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     dateRange: { start: null, end: null },
     strainName: '',
@@ -40,7 +44,7 @@ const Map = ({ user }) => {
       A1: false,
       A2: false,
       B: false,
-      UNDEFINED: false
+      'не определен': false
     },
     mucoidPhenotype: {
       'mutant': false,
@@ -69,6 +73,7 @@ const Map = ({ user }) => {
         }
       });
 
+      console.log('Received points from server:', response.data);
       setPoints(response.data);
     } catch (error) {
       console.error('Error fetching points:', error);
@@ -160,22 +165,16 @@ const Map = ({ user }) => {
           <p><strong>Мукоидный фенотип:</strong> ${point.mucoidPhenotype}</p>
           <p><strong>exoS:</strong> ${point.exoS}</p>
           <p><strong>exoU:</strong> ${point.exoU}</p>
-          <p><strong>Дата:</strong> ${new Date(point.date).toLocaleDateString()}</p>
+          <p><strong>Дата выделения:</strong> ${new Date(point.date).toLocaleDateString()}</p>
           <p><strong>Объект выделения:</strong> ${point.isolationObject}</p>
+          <p><strong>Добавлено:</strong> ${new Date(point.createdAt).toLocaleString()}</p>
+          <p><strong>Добавил:</strong> ${point.createdBy}</p>
         </div>
       `;
 
       marker.bindPopup(popupContent);
       clusterGroupRef.current.addLayer(marker);
     });
-
-    // Если есть маркеры, центрируем карту на них
-    if (filteredPoints.length > 0) {
-      const bounds = clusterGroupRef.current.getBounds();
-      mapInstanceRef.current.fitBounds(bounds, {
-        padding: [50, 50]
-      });
-    }
   }, [filteredPoints, mapInstanceRef.current]);
 
   // Загружаем точки при монтировании компонента
@@ -223,13 +222,37 @@ const Map = ({ user }) => {
       console.log('Полученные данные:', data);
       console.log('Тип даты:', typeof data.date);
       console.log('Значение даты:', data.date);
+      console.log('userEmail from localStorage:', localStorage.getItem('userEmail'));
+      console.log('createdBy from data:', data.createdBy);
 
       const formattedData = {
         ...data,
         latitude: parseFloat(data.latitude),
         longitude: parseFloat(data.longitude),
-        date: data.date
+        date: data.date,
+        createdAt: new Date().toISOString(),
+        createdBy: data.createdBy || localStorage.getItem('userEmail') || 'unknown'
       };
+
+      // Проверяем на дубликат
+      const isDuplicate = points.some(point => {
+        const existingDate = new Date(point.date).toISOString().split('T')[0];
+        const newDate = new Date(formattedData.date).toISOString().split('T')[0];
+        
+        return point.strainName === formattedData.strainName &&
+               Math.abs(point.latitude - formattedData.latitude) < 0.000001 &&
+               Math.abs(point.longitude - formattedData.longitude) < 0.000001 &&
+               existingDate === newDate;
+      });
+
+      if (isDuplicate) {
+        setNotification({
+          open: true,
+          message: `Штамм ${formattedData.strainName} с такими координатами (${formattedData.latitude}, ${formattedData.longitude}) и датой ${new Date(formattedData.date).toLocaleDateString()} уже существует`,
+          severity: 'error'
+        });
+        return;
+      }
 
       console.log('Отформатированные данные:', formattedData);
       console.log('Тип даты после форматирования:', typeof formattedData.date);
@@ -249,28 +272,14 @@ const Map = ({ user }) => {
 
       setNotification({
         open: true,
-        message: 'Данные успешно добавлены',
+        message: 'Штамм успешно добавлен',
         severity: 'success'
       });
-      
-      setTimeout(() => {
-        setNotification(prev => ({
-          ...prev,
-          open: false
-        }));
-      }, 3000);
     } catch (error) {
-      console.error('Error adding strain:', error);
-      console.error('Детали ошибки:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-      
+      console.error('Ошибка при добавлении штамма:', error);
       setNotification({
         open: true,
-        message: error.response?.data?.message || 'Ошибка при добавлении данных',
+        message: error.response?.data?.message || 'Ошибка при добавлении штамма',
         severity: 'error'
       });
     }
@@ -431,7 +440,7 @@ const Map = ({ user }) => {
       'Мукоидный фенотип': point.mucoidPhenotype,
       'ExoS': point.exoS,
       'ExoU': point.exoU,
-      'Дата': new Date(point.date).toLocaleDateString(),
+      'Дата выделения': new Date(point.date).toLocaleDateString(),
       'Объект выделения': point.isolationObject,
       'Широта': point.latitude,
       'Долгота': point.longitude
@@ -451,7 +460,7 @@ const Map = ({ user }) => {
       { wch: 20 }, // Мукоидный фенотип
       { wch: 10 }, // ExoS
       { wch: 10 }, // ExoU
-      { wch: 15 }, // Дата
+      { wch: 15 }, // Дата выделения
       { wch: 20 }, // Объект выделения
       { wch: 12 }, // Широта
       { wch: 12 }  // Долгота
@@ -468,6 +477,24 @@ const Map = ({ user }) => {
     XLSX.writeFile(wb, fileName);
   };
 
+  const handleAddDataClick = () => {
+    setIsSelectionModalOpen(true);
+  };
+
+  const handleFormSelect = () => {
+    setIsSelectionModalOpen(false);
+    setIsAddStrainModalOpen(true);
+  };
+
+  const handleImportSelect = () => {
+    setIsSelectionModalOpen(false);
+    setIsImportTableModalOpen(true);
+  };
+
+  const handleCloseNotification = () => {
+    setNotification(null);
+  };
+
   return (
     <div className="map-wrapper">
       <div id="map"></div>
@@ -475,7 +502,7 @@ const Map = ({ user }) => {
       {user?.role === 'editor' && (
         <button 
           className="add-data-button"
-          onClick={() => setIsAddStrainModalOpen(true)}
+          onClick={handleAddDataClick}
         >
           <svg
             className="download-icon"
@@ -541,8 +568,8 @@ const Map = ({ user }) => {
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
-                    checked={filters.flagellarAntigen.UNDEFINED}
-                    onChange={(e) => handleFilterChange('flagellarAntigen', 'UNDEFINED', e.target.checked)}
+                    checked={filters.flagellarAntigen['не определен']}
+                    onChange={(e) => handleFilterChange('flagellarAntigen', 'не определен', e.target.checked)}
                   />
                   <span>Не определен</span>
                 </label>
@@ -661,10 +688,23 @@ const Map = ({ user }) => {
         mapInstance={mapInstanceRef.current}
       />
 
+      <AddDataSelectionModal
+        open={isSelectionModalOpen}
+        onClose={() => setIsSelectionModalOpen(false)}
+        onFormSelect={handleFormSelect}
+        onImportSelect={handleImportSelect}
+      />
+
       <AddStrainModal
         open={isAddStrainModalOpen}
         onClose={() => setIsAddStrainModalOpen(false)}
         onSubmit={handleAddStrain}
+      />
+
+      <ImportTableModal
+        open={isImportTableModalOpen}
+        onClose={() => setIsImportTableModalOpen(false)}
+        onImportSuccess={fetchPoints}
       />
 
       {notification && (
@@ -672,7 +712,7 @@ const Map = ({ user }) => {
           {notification.message}
           <button 
             className="notification-close"
-            onClick={() => setNotification(null)}
+            onClick={handleCloseNotification}
           >
             ×
           </button>

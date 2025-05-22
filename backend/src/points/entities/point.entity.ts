@@ -73,4 +73,10 @@ export class Point {
 
   @Column()
   isolationObject: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column()
+  createdBy: string;
 } 

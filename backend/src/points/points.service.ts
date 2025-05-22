@@ -13,7 +13,10 @@ export class PointsService {
   ) {}
 
   async create(createPointDto: CreatePointDto): Promise<Point> {
-    const point = this.pointsRepository.create(createPointDto);
+    const point = this.pointsRepository.create({
+      ...createPointDto,
+      createdAt: new Date()
+    });
     return await this.pointsRepository.save(point);
   }
 
@@ -39,4 +42,24 @@ export class PointsService {
     const point = await this.findOne(id);
     await this.pointsRepository.remove(point);
   }
-} 
+
+  async import(points: CreatePointDto[]) {
+    console.log('Received points for import:', points);
+    const createdPoints = [];
+    for (const point of points) {
+      try {
+        console.log('Processing point:', point);
+        const createdPoint = await this.create(point);
+        console.log('Successfully created point:', createdPoint);
+        createdPoints.push(createdPoint);
+      } catch (error) {
+        console.error(`Error importing point: ${JSON.stringify(point)}`, error);
+        throw error;
+      }
+    }
+    return {
+      message: `Successfully imported ${createdPoints.length} points`,
+      importedPoints: createdPoints
+    };
+  }
+}

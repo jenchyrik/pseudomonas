@@ -52,4 +52,8 @@ export class CreatePointDto {
   @IsString()
   @IsNotEmpty()
   isolationObject: string;
+
+  @IsString()
+  @IsNotEmpty()
+  createdBy: string;
 } 
