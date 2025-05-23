@@ -1,0 +1,512 @@
+@use 'sass:color';
+@use '../styles/components/_buttons.scss';
+
+// Variables
+$notification-width: 300px;
+$notification-max-width: 400px;
+$notification-padding: 16px;
+$notification-radius: 4px;
+$notification-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+$notification-success: #4caf50;
+$notification-error: #f44336;
+
+$map-margin: 30px;
+$map-border-radius: 40px;
+$map-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+$panel-width: 380px;
+$panel-radius: 30px;
+$panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+$panel-header-bg: #f8f9fa;
+$panel-border: rgba(0, 0, 0, 0.05);
+$background-light: #f8f9fa;
+
+$filter-radius: 8px;
+$filter-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+$filter-bg: rgba(255, 255, 255, 0.9);
+
+$button-primary: #007bff;
+$button-primary-hover: #0069d9;
+$button-radius: 1000px;
+$button-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+// Leaflet Zoom Controls
+.leaflet-control-zoom {
+  position: absolute !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 100 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.leaflet-control-zoom a {
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  color: #333 !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #f8f9fa !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-control-zoom a:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.leaflet-control-zoom-in {
+  margin-bottom: 8px !important;
+}
+
+// Animations
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Notifications
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1100;
+  min-width: $notification-width;
+  max-width: $notification-max-width;
+  padding: $notification-padding;
+  border-radius: $notification-radius;
+  box-shadow: $notification-shadow;
+  animation: slideIn 0.3s ease-out;
+
+  &.success {
+    background-color: $notification-success;
+    color: white;
+  }
+
+  &.error {
+    background-color: $notification-error;
+    color: white;
+  }
+}
+
+.notification-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: $notification-padding;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Map Container
+.map-wrapper {
+  position: relative;
+  width: calc(100% - #{$map-margin * 2});
+  max-width: calc(100% - #{$map-margin * 2});
+  height: calc(100vh - 100px);
+  margin: 0 $map-margin 40px $map-margin;
+  border-radius: $map-border-radius;
+  overflow: hidden;
+  box-shadow: $map-shadow;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: $map-border-radius;
+  z-index: 1;
+}
+
+// Control Panel
+.map-control-panel {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  bottom: 15px;
+  width: $panel-width;
+  background-color: white;
+  border-radius: $panel-radius;
+  box-shadow: $panel-shadow;
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid $panel-border;
+  background-color: $panel-header-bg;
+  display: flex;
+  justify-content: center;
+}
+
+.system-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.panel-content {
+  padding: 15px 20px;
+  flex: 1;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+// Filters
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 5px;
+  width: 100%;
+}
+
+.filter-group {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: $filter-bg;
+  border-radius: $filter-radius;
+  box-shadow: $filter-shadow;
+}
+
+.filter-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.filter-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  padding: 2px 6px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: #e9e9e9;
+  }
+
+  input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.filter-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #333;
+  background: #fff;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: $button-primary;
+    box-shadow: 0 0 0 2px rgba($button-primary, 0.1);
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+// Panel Footer
+.panel-footer {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid $panel-border;
+  background-color: $panel-header-bg;
+}
+
+// Buttons
+.download-button {
+  flex: 1;
+  padding: 6px 15px;
+  height: 34px;
+  background: $button-primary;
+  color: white;
+  border: none;
+  border-radius: $button-radius;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+  box-shadow: $button-shadow;
+  outline: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:hover {
+    background: $button-primary-hover;
+    transform: translateY(-1px);
+  }
+}
+
+// Custom Zoom Controls
+.custom-zoom-control {
+  position: absolute !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  background: #f8f9fa !important;
+  padding: 8px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.zoom-button {
+  width: 40px !important;
+  height: 40px !important;
+  background: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s !important;
+  padding: 0 !important;
+
+  svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: #333 !important;
+  }
+
+  &:hover {
+    background: #f8f9fa !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+  }
+}
+
+// Add Data Button
+.add-data-button {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  transform: none !important;
+  padding: 8px 16px !important;
+  background: #495057 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: $button-radius !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  z-index: 100 !important;
+  box-shadow: $button-shadow !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  min-width: 150px !important;
+
+  .download-icon {
+    width: 14px !important;
+    height: 14px !important;
+    fill: currentColor !important;
+  }
+
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  &:hover {
+    background: #6c757d !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+  }
+}
+
+// Media Queries
+@media (max-width: 768px) {
+  .add-data-button {
+    bottom: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+// Leaflet Overrides
+.leaflet-control-attribution {
+  display: none;
+}
+
+// Marker Popup
+.marker-popup {
+  padding: 10px;
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  strong {
+    color: #333;
+  }
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 10px;
+}
+
+.leaflet-popup-tip {
+  background: white;
+}
+
+// Marker Clusters
+.marker-cluster {
+  background: rgba($button-primary, 0.6);
+
+  div {
+    background: rgba($button-primary, 0.8);
+    color: white;
+    font-weight: 500;
+  }
+
+  span {
+    color: white;
+  }
+
+  &.marker-cluster-small {
+    background: rgba($button-primary, 0.6);
+
+    div {
+      background: rgba($button-primary, 0.8);
+    }
+  }
+
+  &.marker-cluster-medium {
+    background: rgba($button-primary, 0.6);
+
+    div {
+      background: rgba($button-primary, 0.8);
+    }
+  }
+
+  &.marker-cluster-large {
+    background: rgba($button-primary, 0.6);
+
+    div {
+      background: rgba($button-primary, 0.8);
+    }
+  }
+}
+
+.zoom-buttons {
+  button {
+    &:hover {
+      background: color.adjust($background-light, $lightness: -5%);
+    }
+  }
+} 

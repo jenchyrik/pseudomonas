@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import './App.css'
+import './App.scss'
 import AdminPanel from './components/AdminPanel'
 import Auth from './components/Auth'
 import Header from './components/Header'
@@ -87,9 +87,9 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="App" role="application">
+      <div className="App">
         <Header user={user} onLogout={handleLogout} />
-        <main className="main-content" role="main">
+        <main className="main-content">
           <Routes>
             <Route
               path="/admin"

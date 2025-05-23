@@ -1,0 +1,136 @@
+// Variables
+$auth-container-height: calc(100vh - 60px);
+$auth-form-max-width: 400px;
+$auth-form-padding: 2rem;
+$auth-form-radius: 40px;
+$auth-form-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+$primary-color: #4285f4;
+$primary-hover: #3367d6;
+$error-color: #e53935;
+$text-color: #333;
+$text-color-light: #555;
+$text-color-lighter: #666;
+$border-color: #ddd;
+
+$input-radius: 1000px;
+$input-padding: 0.75rem;
+$input-transition: border-color 0.2s;
+
+// Auth Container
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: $auth-container-height;
+  background-color: transparent;
+
+  .system-title {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    margin-top: -60px;
+    color: white;
+    font-size: 36px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+// Auth Form Container
+.auth-form-container {
+  background-color: white;
+  padding: $auth-form-padding;
+  border-radius: $auth-form-radius;
+  box-shadow: $auth-form-shadow;
+  width: 100%;
+  max-width: $auth-form-max-width;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: $text-color;
+  }
+}
+
+// Error Message
+.auth-error {
+  background-color: #fff8f8;
+  color: $error-color;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 4px solid $error-color;
+  margin-bottom: 1rem;
+}
+
+// Form
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9rem;
+    color: $text-color-light;
+  }
+
+  input {
+    padding: $input-padding;
+    border: 1px solid $border-color;
+    border-radius: $input-radius;
+    font-size: 1rem;
+    transition: $input-transition;
+
+    &:focus {
+      border-color: $primary-color;
+      outline: none;
+    }
+  }
+}
+
+// Buttons
+.auth-button {
+  background-color: $primary-color;
+  color: white;
+  padding: $input-padding;
+  border: none;
+  border-radius: $input-radius;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+
+  &:hover {
+    background-color: $primary-hover;
+  }
+}
+
+// Toggle Section
+.auth-toggle {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: $text-color-lighter;
+  font-size: 0.9rem;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: $primary-color;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+} 

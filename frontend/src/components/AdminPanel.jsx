@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import LoginHistory from './admin/LoginHistory'
 import ErrorLogs from './admin/ErrorLogs'
 import PointsManagement from './admin/PointsManagement'
 import UserManagement from './admin/UserManagement'
-import './AdminPanel.css'
+import './AdminPanel.scss'
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('users')
@@ -58,4 +59,8 @@ export default function AdminPanel() {
       </section>
     </main>
   )
+}
+
+AdminPanel.propTypes = {
+  // Add any necessary prop types here
 }

@@ -1,0 +1,715 @@
+@use 'sass:color';
+@use '../styles/components/_buttons.scss';
+
+// Variables
+$panel-padding: 40px;
+$panel-margin: 15px;
+$panel-radius: 40px;
+$panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+$panel-border: #eee;
+
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$danger-color: #dc3545;
+$success-color: #28a745;
+$success-hover: #218838;
+$text-color: #333;
+$text-color-light: #666;
+$background-light: #f8f9fa;
+
+$button-radius: 1000px;
+$input-radius: 1000px;
+$table-radius: 12px;
+
+$transition-duration: 0.2s;
+
+// Reset
+.admin-panel {
+  all: initial;
+  box-sizing: border-box;
+}
+
+// Main Panel
+.admin-panel {
+  padding: $panel-padding;
+  width: calc(100% - #{$panel-margin * 2});
+  max-width: calc(100% - #{$panel-margin * 2});
+  margin: $panel-margin auto;
+  height: calc(100vh - 90px);
+  background: white;
+  border-radius: $panel-radius;
+  box-shadow: $panel-shadow;
+  border: 1px solid $panel-border;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    display: block;
+    height: 100px;
+    width: 100%;
+    position: absolute;
+    bottom: -100px;
+    left: 0;
+    background: transparent;
+  }
+}
+
+// Title
+.admin-title {
+  margin-bottom: 30px;
+  color: $text-color;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+// Tabs
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid $panel-border;
+  padding-bottom: 10px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: $text-color-light;
+  cursor: pointer;
+  transition: all $transition-duration;
+  border-radius: $button-radius;
+
+  &:hover {
+    background: $background-light;
+    color: $text-color;
+  }
+
+  &.active {
+    background: $primary-color;
+    color: white;
+  }
+}
+
+// Content
+.admin-content {
+  background: white;
+  border-radius: $table-radius;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+
+// Table
+.table-container {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $panel-border;
+  border-radius: $table-radius;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: $table-radius;
+  table-layout: fixed;
+
+  thead {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+  }
+
+  tbody {
+    overflow-y: auto;
+  }
+
+  tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+
+    &:hover {
+      background: $background-light;
+    }
+  }
+
+  th,
+  td {
+    padding: 8px 4px;
+    text-align: left;
+    border-bottom: 1px solid $panel-border;
+    color: $text-color;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  th {
+    background: $background-light;
+    font-weight: 600;
+    color: $text-color;
+  }
+
+  // Column widths
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 5%;
+    text-align: center;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 30%;
+    text-align: center;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 15%;
+    text-align: center;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 15%;
+    text-align: center;
+  }
+
+  // Место для кнопок
+  th:last-child,
+  td:last-child {
+    width: 35%;
+    text-align: center;
+  }
+}
+
+// Action Buttons
+.action-button {
+  padding: 4px 10px;
+  border: none;
+  border-radius: $button-radius;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all $transition-duration;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 28px;
+  margin: 0 6px;
+
+  &.edit {
+    background: $primary-color;
+    color: white;
+  }
+
+  &.delete {
+    background: $danger-color;
+    color: white;
+  }
+
+  &.add {
+    background: $success-color;
+    color: white;
+
+    &:hover {
+      background: $success-hover;
+      transform: translateY(-1px);
+    }
+  }
+
+  &.details {
+    min-width: 100px;
+  }
+
+  // Для кнопок с длинным текстом
+  &[style*="width"] {
+    min-width: 120px;
+  }
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+}
+
+// Form
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+
+  button[type="submit"] {
+    margin-top: auto;
+    padding: 12px 24px;
+    border: none;
+    border-radius: $button-radius;
+    background: $primary-color;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all $transition-duration;
+
+    &:hover {
+      background: $primary-hover;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.form-group {
+  margin: 0;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: $text-color;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: $input-radius;
+    font-size: 14px;
+    transition: all $transition-duration;
+    background: white;
+
+    &:focus {
+      border-color: $primary-color;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+  }
+}
+
+// Modal
+.admin-panel {
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: $table-radius;
+    box-shadow: $panel-shadow;
+    width: 450px;
+    max-height: 450px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: $text-color-light;
+    transition: color $transition-duration;
+
+    &:hover {
+      color: $text-color;
+    }
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: $text-color;
+    line-height: 1;
+  }
+
+  // Стили для формы в модальном окне
+  .modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+
+    .form-group {
+      margin: 0;
+    }
+  }
+
+  // Стили для кнопок в модальном окне
+  .modal-buttons {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid $panel-border;
+
+    button {
+      width: 100%;
+      max-width: 200px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: $button-radius;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all $transition-duration;
+
+      &.submit {
+        background: $primary-color;
+        color: white;
+
+        &:hover {
+          background: color.adjust($primary-color, $lightness: -10%);
+        }
+      }
+
+      &.cancel {
+        background: $background-light;
+        color: $text-color;
+
+        &:hover {
+          background: color.adjust($background-light, $lightness: -5%);
+        }
+      }
+    }
+  }
+}
+
+// Log Levels
+.log-level {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.error {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+  }
+
+  &.warning {
+    background: rgba(#ffc107, 0.1);
+    color: #856404;
+  }
+
+  &.info {
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
+}
+
+// Error Details
+.error-details {
+  margin-top: 10px;
+
+  p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+}
+
+.stack-trace {
+  margin-top: 10px;
+
+  pre {
+    background: $background-light;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.4;
+    color: $text-color;
+  }
+}
+
+// Admin Header
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  padding-right: 120px;
+}
+
+.admin-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.admin-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: $text-color;
+}
+
+// Кнопка добавления данных
+.add-data-button {
+  padding: 8px 16px;
+  background: $success-color;
+  color: white;
+  border: none;
+  border-radius: $button-radius;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-duration;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background: $success-hover;
+    transform: translateY(-1px);
+  }
+}
+
+// Кнопки масштабирования
+.zoom-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  button {
+    padding: 6px 12px;
+    background: $background-light;
+    border: 1px solid $panel-border;
+    border-radius: $button-radius;
+    font-size: 14px;
+    color: $text-color;
+    cursor: pointer;
+    transition: all $transition-duration;
+
+    &:hover {
+      background: color.adjust($background-light, $lightness: -5%);
+    }
+
+    &.active {
+      background: $primary-color;
+      color: white;
+      border-color: $primary-color;
+    }
+  }
+}
+
+// Select
+select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: $input-radius;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  transition: all $transition-duration;
+
+  &:focus {
+    border-color: $primary-color;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+}
+
+// Users Container
+.users-container {
+  .admin-table {
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 30px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 120px;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 80px;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 80px;
+    }
+
+    th:last-child,
+    td:last-child {
+      width: 200px;
+    }
+  }
+}
+
+// Points Container
+.points-container {
+  .admin-table {
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 30px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 120px;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 80px;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 80px;
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 80px;
+    }
+
+    th:nth-child(6),
+    td:nth-child(6) {
+      width: 80px;
+    }
+
+    th:nth-child(7),
+    td:nth-child(7) {
+      width: 80px;
+    }
+
+    th:nth-child(8),
+    td:nth-child(8) {
+      width: 80px;
+    }
+
+    th:nth-child(9),
+    td:nth-child(9) {
+      width: 80px;
+    }
+
+    th:nth-child(10),
+    td:nth-child(10) {
+      width: 80px;
+    }
+
+    th:nth-child(11),
+    td:nth-child(11) {
+      width: 80px;
+    }
+
+    th:nth-child(12),
+    td:nth-child(12) {
+      width: 80px;
+    }
+
+    th:nth-child(13),
+    td:nth-child(13) {
+      width: 80px;
+    }
+
+    th:nth-child(14),
+    td:nth-child(14) {
+      width: 80px;
+    }
+
+    th:last-child,
+    td:last-child {
+      width: 200px;
+    }
+  }
+
+  .action-button.edit,
+  .action-button.delete {
+    margin-right: 8px;
+  }
+}
+
+// Calendar
+.calendar-container {
+  position: relative;
+  margin-bottom: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .calendar {
+    background: white;
+    border-radius: $table-radius;
+    box-shadow: $panel-shadow;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .calendar-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid $panel-border;
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: $button-radius;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all $transition-duration;
+
+      &.submit {
+        background: $primary-color;
+        color: white;
+
+        &:hover {
+          background: color.adjust($primary-color, $lightness: -10%);
+        }
+      }
+
+      &.cancel {
+        background: $background-light;
+        color: $text-color;
+
+        &:hover {
+          background: color.adjust($background-light, $lightness: -5%);
+        }
+      }
+    }
+  }
+} 

@@ -349,9 +349,6 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
           
           <div className="import-content">
             <div className="file-upload">
-              <label htmlFor="file-input" className="file-label">
-                Выберите файл Excel
-              </label>
               <input
                 id="file-input"
                 type="file"

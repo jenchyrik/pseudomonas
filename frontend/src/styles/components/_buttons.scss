@@ -1,0 +1,76 @@
+@use 'sass:color';
+
+// Variables
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$success-color: #28a745;
+$success-hover: #218838;
+$text-color: #333;
+$text-color-light: #666;
+$background-light: #f8f9fa;
+$panel-border: #eee;
+$button-radius: 1000px;
+$panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+$transition-duration: 0.2s;
+
+// Common button styles
+.add-data-button {
+  padding: 8px 16px;
+  background: $success-color;
+  color: white;
+  border: none;
+  border-radius: $button-radius;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-duration;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: $panel-shadow;
+
+  &:hover {
+    background: $success-hover;
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+// Zoom buttons
+.zoom-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  button {
+    padding: 6px 12px;
+    background: $background-light;
+    border: 1px solid $panel-border;
+    border-radius: $button-radius;
+    font-size: 14px;
+    color: $text-color;
+    cursor: pointer;
+    transition: all $transition-duration;
+    box-shadow: $panel-shadow;
+
+    &:hover {
+      background: color.adjust($background-light, $lightness: -5%);
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      background: $primary-color;
+      color: white;
+      border-color: $primary-color;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+} 

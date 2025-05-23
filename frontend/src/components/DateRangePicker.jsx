@@ -2,7 +2,7 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
-import './DateRangePicker.css'
+import './DateRangePicker.scss'
 
 export default function DateRangePicker({ onRangeSelect }) {
   const [isOpen, setIsOpen] = useState(false)

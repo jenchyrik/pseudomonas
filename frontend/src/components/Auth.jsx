@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { loginUser } from '../services/api'
-import './Auth.css'
+import './Auth.scss'
 
 export default function Auth({ onAuth }) {
   const [email, setEmail] = useState('')
@@ -77,7 +77,7 @@ export default function Auth({ onAuth }) {
     </div>
   )
 }
-
 Auth.propTypes = {
   onAuth: PropTypes.func.isRequired
 }
+

@@ -5,7 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import PropTypes from 'prop-types';
 import DateRangePicker from './DateRangePicker.jsx';
-import './Map.css';
+import './Map.scss';
 import SaveImageModal from './SaveImageModal.jsx';
 import AddStrainModal from './AddStrainModal';
 import axios from 'axios';
@@ -307,10 +307,74 @@ const Map = ({ user }) => {
       maxZoom: 19,
       zoomSnap: 0.5,
       zoomDelta: 0.5
-    }).setView([47.2313, 39.7233], 13)
+    }).setView([47.2313, 39.7233], 13);
 
-    mapInstanceRef.current = map
-    mapRef.current = map
+    // Добавляем элементы управления масштабом вручную
+    const zoomControl = L.control.zoom({
+      position: 'bottomright'
+    });
+    
+    // Добавляем стили для элементов управления
+    const style = document.createElement('style');
+    style.textContent = `
+      .leaflet-control-zoom {
+        position: absolute !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 100 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 5px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .leaflet-control-zoom a {
+        background: linear-gradient(to right, #6a7677, #565e5e) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 36px !important;
+        height: 36px !important;
+        line-height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none !important;
+        color: white !important;
+        font-weight: bold !important;
+        font-size: 18px !important;
+        transition: all 0.2s !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+      }
+      .leaflet-control-zoom a:hover {
+        background: linear-gradient(to right, #778586, #667272) !important;
+        color: white !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15) !important;
+      }
+      .leaflet-control-zoom a:active {
+        transform: translateY(0) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      }
+      .leaflet-control-zoom-in {
+        margin-bottom: 0 !important;
+      }
+      .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+        background: linear-gradient(to right, #6a7677, #565e5e) !important;
+        border: none !important;
+        border-radius: 50% !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    zoomControl.addTo(map);
+
+    mapInstanceRef.current = map;
+    mapRef.current = map;
 
     // Базовый слой OpenStreetMap
     const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -363,50 +427,6 @@ const Map = ({ user }) => {
 
     // Добавляем группу кластеризации на карту
     map.addLayer(clusterGroupRef.current);
-
-    const zoomControlContainer = L.DomUtil.create('div', 'custom-zoom-control')
-
-    const buttonsContainer = L.DomUtil.create(
-      'div',
-      'zoom-buttons-container',
-      zoomControlContainer
-    )
-
-    const zoomInButton = L.DomUtil.create(
-      'button',
-      'zoom-in-button',
-      buttonsContainer
-    )
-    zoomInButton.innerHTML = '+'
-
-    const zoomOutButton = L.DomUtil.create(
-      'button',
-      'zoom-out-button',
-      buttonsContainer
-    )
-    zoomOutButton.innerHTML = '−' 
-
-    L.DomEvent.on(zoomInButton, 'click', function () {
-      map.zoomIn()
-    })
-
-    L.DomEvent.on(zoomOutButton, 'click', function () {
-      map.zoomOut()
-    })
-
-    L.DomEvent.disableClickPropagation(zoomControlContainer)
-
-    const CustomZoomControl = L.Control.extend({
-      options: {
-        position: 'bottomright',
-      },
-
-      onAdd: function () {
-        return zoomControlContainer
-      },
-    })
-
-    map.addControl(new CustomZoomControl())
 
     setTimeout(() => {
       map.invalidateSize()
@@ -496,21 +516,19 @@ const Map = ({ user }) => {
   };
 
   return (
-    <section className="map-wrapper" aria-label="Карта штаммов">
-      <div id="map" role="application" aria-label="Интерактивная карта"></div>
+    <section className="map-wrapper">
+      <div id="map" ref={mapRef} className="map"></div>
 
       {user?.role === 'editor' && (
         <button 
           className="add-data-button"
           onClick={handleAddDataClick}
-          aria-label="Добавить данные"
         >
           <svg
             className="download-icon"
             viewBox="0 0 24 24"
             width="16"
             height="16"
-            aria-hidden="true"
           >
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
           </svg>
@@ -518,7 +536,7 @@ const Map = ({ user }) => {
         </button>
       )}
 
-      <aside className="map-control-panel" role="complementary" aria-label="Панель управления картой">
+      <aside className="map-control-panel">
         <header className="panel-header">
           <h2 className="system-title">ГИС по P.aeruginosa</h2>
         </header>
@@ -528,7 +546,7 @@ const Map = ({ user }) => {
             onRangeSelect={handleDateRangeSelect}
           />
           
-          <section className="filter-section" aria-label="Фильтры">
+          <section className="filter-section">
             <div className="filter-group">
               <h3 className="filter-title">Штамм</h3>
               <input
@@ -537,20 +555,17 @@ const Map = ({ user }) => {
                 value={filters.strainName}
                 onChange={(e) => handleFilterChange('strainName', '', e.target.value)}
                 className="filter-input"
-                aria-label="Поиск по названию штамма"
-                aria-expanded={filters.strainName ? "true" : "false"}
               />
             </div>
 
             <div className="filter-group">
               <h3 className="filter-title">Жгутиковый антиген</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Фильтр по жгутиковому антигену">
+              <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.flagellarAntigen.A1}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'A1', e.target.checked)}
-                    aria-label="A1"
                   />
                   <span>A1</span>
                 </label>
@@ -559,7 +574,6 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen.A2}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'A2', e.target.checked)}
-                    aria-label="A2"
                   />
                   <span>A2</span>
                 </label>
@@ -568,7 +582,6 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen.B}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'B', e.target.checked)}
-                    aria-label="B"
                   />
                   <span>B</span>
                 </label>
@@ -577,7 +590,6 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen['не определен']}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'не определен', e.target.checked)}
-                    aria-label="Не определен"
                   />
                   <span>Не определен</span>
                 </label>
@@ -586,13 +598,12 @@ const Map = ({ user }) => {
 
             <div className="filter-group">
               <h3 className="filter-title">Мукоидный фенотип</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Фильтр по мукоидному фенотипу">
+              <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.mucoidPhenotype['mutant']}
                     onChange={(e) => handleFilterChange('mucoidPhenotype', 'mutant', e.target.checked)}
-                    aria-label="Mutant"
                   />
                   <span>Mutant</span>
                 </label>
@@ -601,7 +612,6 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.mucoidPhenotype['wild type']}
                     onChange={(e) => handleFilterChange('mucoidPhenotype', 'wild type', e.target.checked)}
-                    aria-label="Wild type"
                   />
                   <span>wild type</span>
                 </label>
@@ -610,13 +620,12 @@ const Map = ({ user }) => {
 
             <div className="filter-group">
               <h3 className="filter-title">ExoS</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Фильтр по ExoS">
+              <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.exoS['+']}
                     onChange={(e) => handleFilterChange('exoS', '+', e.target.checked)}
-                    aria-label="ExoS положительный"
                   />
                   <span>+</span>
                 </label>
@@ -625,7 +634,6 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.exoS['-']}
                     onChange={(e) => handleFilterChange('exoS', '-', e.target.checked)}
-                    aria-label="ExoS отрицательный"
                   />
                   <span>-</span>
                 </label>
@@ -634,13 +642,12 @@ const Map = ({ user }) => {
 
             <div className="filter-group">
               <h3 className="filter-title">ExoU</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Фильтр по ExoU">
+              <div className="filter-checkboxes">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.exoU['+']}
                     onChange={(e) => handleFilterChange('exoU', '+', e.target.checked)}
-                    aria-label="ExoU положительный"
                   />
                   <span>+</span>
                 </label>
@@ -649,7 +656,6 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.exoU['-']}
                     onChange={(e) => handleFilterChange('exoU', '-', e.target.checked)}
-                    aria-label="ExoU отрицательный"
                   />
                   <span>-</span>
                 </label>
@@ -662,15 +668,12 @@ const Map = ({ user }) => {
           <button 
             className="download-button"
             onClick={handleExportToExcel}
-            aria-label="Сохранить таблицу"
-            aria-haspopup="dialog"
           >
             <svg
               className="download-icon"
               viewBox="0 0 24 24"
               width="16"
               height="16"
-              aria-hidden="true"
             >
               <path
                 d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"
@@ -682,15 +685,12 @@ const Map = ({ user }) => {
           <button
             className="download-button"
             onClick={() => setIsSaveModalOpen(true)}
-            aria-label="Сохранить изображение"
-            aria-haspopup="dialog"
           >
             <svg
               className="download-icon"
               viewBox="0 0 24 24"
               width="16"
               height="16"
-              aria-hidden="true"
             >
               <path
                 d="M4 5h13v7h2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h8v-2H4V5zm19 11h-4v-4h-2v4h-4v2h4v4h2v-4h4v-2z"
@@ -728,23 +728,18 @@ const Map = ({ user }) => {
       />
 
       {notification && (
-        <div 
-          className={`notification ${notification.severity}`}
-          role="alert"
-          aria-live="assertive"
-        >
+        <div className={`notification ${notification.severity}`}>
           {notification.message}
           <button 
             className="notification-close"
             onClick={handleCloseNotification}
-            aria-label="Закрыть уведомление"
           >
             ×
           </button>
         </div>
       )}
     </section>
-  )
+  );
 }
 
 Map.propTypes = {
