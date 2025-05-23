@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import './App.css'
 import AdminPanel from './components/AdminPanel'
 import Auth from './components/Auth'
 import Header from './components/Header'
@@ -81,14 +82,14 @@ export default function App() {
   }
 
   if (loading) {
-    return <div className="loading">Загрузка...</div>
+    return <div className="loading" role="status" aria-label="Загрузка">Загрузка...</div>
   }
 
   return (
     <BrowserRouter>
-      <div className="App">
+      <div className="App" role="application">
         <Header user={user} onLogout={handleLogout} />
-        <main className="main-content">
+        <main className="main-content" role="main">
           <Routes>
             <Route
               path="/admin"

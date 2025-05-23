@@ -31,22 +31,31 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="admin-panel">
+    <main className="admin-panel" role="main">
       <h1 className="admin-title">Панель администратора</h1>
-      <div className="admin-tabs">
+      <nav className="admin-tabs" role="tablist" aria-label="Навигация по разделам">
         {tabs.map(tab => (
           <button
             key={tab.id}
             className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls={`${tab.id}-panel`}
+            id={`${tab.id}-tab`}
           >
             {tab.label}
           </button>
         ))}
-      </div>
-      <div className="admin-content">
+      </nav>
+      <section 
+        className="admin-content"
+        role="tabpanel"
+        aria-labelledby={`${activeTab}-tab`}
+        id={`${activeTab}-panel`}
+      >
         {renderContent()}
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

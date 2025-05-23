@@ -14,20 +14,18 @@ import 'leaflet.markercluster';
 import * as XLSX from 'xlsx';
 import AddDataSelectionModal from './AddDataSelectionModal';
 import ImportTableModal from './ImportTableModal';
-import '../styles/components/_map.scss';
 
 // Исправляем проблему с иконками маркеров
-import icon from 'leaflet/dist/images/marker-icon.png'
-import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-
 let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
+  iconUrl: '/images/marker-icon.png',
+  shadowUrl: '/images/marker-shadow.png',
   iconSize: [25, 41],
-  iconAnchor: [12, 41]
-})
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
-L.Marker.prototype.options.icon = DefaultIcon
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const Map = ({ user }) => {
   const mapRef = useRef(null);
@@ -498,14 +496,14 @@ const Map = ({ user }) => {
   };
 
   return (
-    <section className="map-wrapper" role="region" aria-label="Карта с данными">
+    <section className="map-wrapper" aria-label="Карта штаммов">
       <div id="map" role="application" aria-label="Интерактивная карта"></div>
 
       {user?.role === 'editor' && (
         <button 
           className="add-data-button"
           onClick={handleAddDataClick}
-          aria-label="Добавить новые данные на карту"
+          aria-label="Добавить данные"
         >
           <svg
             className="download-icon"
@@ -525,12 +523,12 @@ const Map = ({ user }) => {
           <h2 className="system-title">ГИС по P.aeruginosa</h2>
         </header>
 
-        <main className="panel-content">
+        <div className="panel-content">
           <DateRangePicker
             onRangeSelect={handleDateRangeSelect}
           />
           
-          <section className="filter-section" aria-label="Фильтры данных">
+          <section className="filter-section" aria-label="Фильтры">
             <div className="filter-group">
               <h3 className="filter-title">Штамм</h3>
               <input
@@ -540,18 +538,19 @@ const Map = ({ user }) => {
                 onChange={(e) => handleFilterChange('strainName', '', e.target.value)}
                 className="filter-input"
                 aria-label="Поиск по названию штамма"
+                aria-expanded={filters.strainName ? "true" : "false"}
               />
             </div>
 
             <div className="filter-group">
               <h3 className="filter-title">Жгутиковый антиген</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Выбор жгутикового антигена">
+              <div className="filter-checkboxes" role="group" aria-label="Фильтр по жгутиковому антигену">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
                     checked={filters.flagellarAntigen.A1}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'A1', e.target.checked)}
-                    aria-label="Жгутиковый антиген A1"
+                    aria-label="A1"
                   />
                   <span>A1</span>
                 </label>
@@ -560,7 +559,7 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen.A2}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'A2', e.target.checked)}
-                    aria-label="Жгутиковый антиген A2"
+                    aria-label="A2"
                   />
                   <span>A2</span>
                 </label>
@@ -569,7 +568,7 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen.B}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'B', e.target.checked)}
-                    aria-label="Жгутиковый антиген B"
+                    aria-label="B"
                   />
                   <span>B</span>
                 </label>
@@ -578,16 +577,40 @@ const Map = ({ user }) => {
                     type="checkbox" 
                     checked={filters.flagellarAntigen['не определен']}
                     onChange={(e) => handleFilterChange('flagellarAntigen', 'не определен', e.target.checked)}
-                    aria-label="Жгутиковый антиген не определен"
+                    aria-label="Не определен"
                   />
-                  <span>не определен</span>
+                  <span>Не определен</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="filter-group">
+              <h3 className="filter-title">Мукоидный фенотип</h3>
+              <div className="filter-checkboxes" role="group" aria-label="Фильтр по мукоидному фенотипу">
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.mucoidPhenotype['mutant']}
+                    onChange={(e) => handleFilterChange('mucoidPhenotype', 'mutant', e.target.checked)}
+                    aria-label="Mutant"
+                  />
+                  <span>Mutant</span>
+                </label>
+                <label className="filter-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.mucoidPhenotype['wild type']}
+                    onChange={(e) => handleFilterChange('mucoidPhenotype', 'wild type', e.target.checked)}
+                    aria-label="Wild type"
+                  />
+                  <span>wild type</span>
                 </label>
               </div>
             </div>
 
             <div className="filter-group">
               <h3 className="filter-title">ExoS</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Выбор ExoS">
+              <div className="filter-checkboxes" role="group" aria-label="Фильтр по ExoS">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
@@ -611,7 +634,7 @@ const Map = ({ user }) => {
 
             <div className="filter-group">
               <h3 className="filter-title">ExoU</h3>
-              <div className="filter-checkboxes" role="group" aria-label="Выбор ExoU">
+              <div className="filter-checkboxes" role="group" aria-label="Фильтр по ExoU">
                 <label className="filter-checkbox">
                   <input 
                     type="checkbox" 
@@ -633,18 +656,21 @@ const Map = ({ user }) => {
               </div>
             </div>
           </section>
-        </main>
+        </div>
 
-        <div className="panel-footer">
+        <footer className="panel-footer">
           <button 
             className="download-button"
             onClick={handleExportToExcel}
+            aria-label="Сохранить таблицу"
+            aria-haspopup="dialog"
           >
             <svg
               className="download-icon"
               viewBox="0 0 24 24"
               width="16"
               height="16"
+              aria-hidden="true"
             >
               <path
                 d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"
@@ -656,12 +682,15 @@ const Map = ({ user }) => {
           <button
             className="download-button"
             onClick={() => setIsSaveModalOpen(true)}
+            aria-label="Сохранить изображение"
+            aria-haspopup="dialog"
           >
             <svg
               className="download-icon"
               viewBox="0 0 24 24"
               width="16"
               height="16"
+              aria-hidden="true"
             >
               <path
                 d="M4 5h13v7h2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h8v-2H4V5zm19 11h-4v-4h-2v4h-4v2h4v4h2v-4h4v-2z"
@@ -670,7 +699,7 @@ const Map = ({ user }) => {
             </svg>
             Сохранить изображение
           </button>
-        </div>
+        </footer>
       </aside>
 
       <SaveImageModal
@@ -699,11 +728,16 @@ const Map = ({ user }) => {
       />
 
       {notification && (
-        <div className={`notification ${notification.severity}`}>
+        <div 
+          className={`notification ${notification.severity}`}
+          role="alert"
+          aria-live="assertive"
+        >
           {notification.message}
           <button 
             className="notification-close"
             onClick={handleCloseNotification}
+            aria-label="Закрыть уведомление"
           >
             ×
           </button>

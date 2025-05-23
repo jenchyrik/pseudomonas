@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { Link, useLocation } from 'react-router-dom'
-import '../styles/components/_header.scss'
+import '../styles/Header.css'
 
 Header.propTypes = {
   user: PropTypes.shape({
@@ -18,7 +18,7 @@ export default function Header({ user, onLogout }) {
       <div className="header-left">
         <img
           src="/rospotrebnadzor_emb_n9349.png"
-          alt="Логотип Роспотребнадзора"
+          alt="Логотип РПН"
           className="header-logo"
         />
         <div className="institute-name-wrapper">
@@ -66,7 +66,7 @@ export default function Header({ user, onLogout }) {
           </li>
           {user ? (
             <>
-              <li className="divider" aria-hidden="true"></li>
+              <li className="divider" role="separator"></li>
               <li className="user-menu">
                 <span className="username" aria-label={`Пользователь: ${user.email}`}>{user.email}</span>
                 <button 

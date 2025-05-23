@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getApiUrl } from '../../config/api'
+import '../../styles/admin.css'
 
 export default function PointsManagement() {
   const [points, setPoints] = useState([])
@@ -200,63 +201,28 @@ export default function PointsManagement() {
       </div>
 
       {showDetailsModal && selectedPointDetails && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div className="modal-overlay">
           <div className="modal-content">
-            <button 
-              className="modal-close" 
-              onClick={() => setShowDetailsModal(false)}
-              aria-label="Закрыть окно"
-            >
+            <button className="modal-close" onClick={() => setShowDetailsModal(false)}>
               ×
             </button>
-            <h3 id="modal-title" className="modal-title">Подробная информация о штамме</h3>
+            <h3 className="modal-title">Подробная информация о штамме</h3>
             <div className="details-content">
-              <dl>
-                <dt>ID:</dt>
-                <dd>{selectedPointDetails.id}</dd>
-                
-                <dt>Название штамма:</dt>
-                <dd>{selectedPointDetails.strainName}</dd>
-                
-                <dt>CRISPR тип:</dt>
-                <dd>{selectedPointDetails.crisprType}</dd>
-                
-                <dt>Indel генотип:</dt>
-                <dd>{selectedPointDetails.indelGenotype}</dd>
-                
-                <dt>Серогруппа:</dt>
-                <dd>{selectedPointDetails.serogroup}</dd>
-                
-                <dt>Жгутиковый антиген:</dt>
-                <dd>{selectedPointDetails.flagellarAntigen}</dd>
-                
-                <dt>Мукоидный фенотип:</dt>
-                <dd>{selectedPointDetails.mucoidPhenotype}</dd>
-                
-                <dt>ExoS:</dt>
-                <dd>{selectedPointDetails.exoS}</dd>
-                
-                <dt>ExoU:</dt>
-                <dd>{selectedPointDetails.exoU}</dd>
-                
-                <dt>Широта:</dt>
-                <dd>{selectedPointDetails.latitude}</dd>
-                
-                <dt>Долгота:</dt>
-                <dd>{selectedPointDetails.longitude}</dd>
-                
-                <dt>Дата выделения:</dt>
-                <dd>{new Date(selectedPointDetails.date).toLocaleDateString()}</dd>
-                
-                <dt>Объект выделения:</dt>
-                <dd>{selectedPointDetails.isolationObject}</dd>
-                
-                <dt>Добавлено:</dt>
-                <dd>{new Date(selectedPointDetails.createdAt).toLocaleString()}</dd>
-                
-                <dt>Добавил:</dt>
-                <dd>{selectedPointDetails.createdBy}</dd>
-              </dl>
+              <p><strong>ID:</strong> {selectedPointDetails.id}</p>
+              <p><strong>Название штамма:</strong> {selectedPointDetails.strainName}</p>
+              <p><strong>CRISPR тип:</strong> {selectedPointDetails.crisprType}</p>
+              <p><strong>Indel генотип:</strong> {selectedPointDetails.indelGenotype}</p>
+              <p><strong>Серогруппа:</strong> {selectedPointDetails.serogroup}</p>
+              <p><strong>Жгутиковый антиген:</strong> {selectedPointDetails.flagellarAntigen}</p>
+              <p><strong>Мукоидный фенотип:</strong> {selectedPointDetails.mucoidPhenotype}</p>
+              <p><strong>ExoS:</strong> {selectedPointDetails.exoS}</p>
+              <p><strong>ExoU:</strong> {selectedPointDetails.exoU}</p>
+              <p><strong>Широта:</strong> {selectedPointDetails.latitude}</p>
+              <p><strong>Долгота:</strong> {selectedPointDetails.longitude}</p>
+              <p><strong>Дата выделения:</strong> {new Date(selectedPointDetails.date).toLocaleDateString()}</p>
+              <p><strong>Объект выделения:</strong> {selectedPointDetails.isolationObject}</p>
+              <p><strong>Добавлено:</strong> {new Date(selectedPointDetails.createdAt).toLocaleString()}</p>
+              <p><strong>Добавил:</strong> {selectedPointDetails.createdBy}</p>
             </div>
           </div>
         </div>

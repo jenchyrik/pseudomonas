@@ -37,14 +37,14 @@ export default function Auth({ onAuth }) {
   }
 
   return (
-    <main className="auth-container" role="main" aria-label="Страница авторизации">
+    <div className="auth-container">
       <h1 className="system-title">ГИС по P.aeruginosa</h1>
-      <section className="auth-form-container" role="region" aria-label="Форма входа">
+      <div className="auth-form-container">
         <h2>Вход в систему</h2>
 
-        {error && <div className="auth-error" role="alert">{error}</div>}
+        {error && <div className="auth-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form" role="form" aria-label="Форма авторизации">
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -54,7 +54,6 @@ export default function Auth({ onAuth }) {
               onChange={e => setEmail(e.target.value)}
               placeholder="Введите email"
               disabled={isLoading}
-              aria-required="true"
             />
           </div>
 
@@ -67,21 +66,15 @@ export default function Auth({ onAuth }) {
               onChange={e => setPassword(e.target.value)}
               placeholder="Введите пароль"
               disabled={isLoading}
-              aria-required="true"
             />
           </div>
 
-          <button 
-            type="submit" 
-            className="auth-button" 
-            disabled={isLoading}
-            aria-label={isLoading ? 'Выполняется вход...' : 'Войти в систему'}
-          >
+          <button type="submit" className="auth-button" disabled={isLoading}>
             {isLoading ? 'Вход...' : 'Войти'}
           </button>
         </form>
-      </section>
-    </main>
+      </div>
+    </div>
   )
 }
 

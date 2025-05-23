@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getUsers, createUser, updateUser, deleteUser, changePassword } from '../../services/api'
-import '../../styles/components/_admin.scss'
+import '../../styles/admin.css'
 
 export default function UserManagement() {
   const [users, setUsers] = useState([])
@@ -147,46 +147,38 @@ export default function UserManagement() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div className="modal-overlay">
           <div className="modal-content">
-            <button 
-              className="modal-close" 
-              onClick={() => setShowModal(false)}
-              aria-label="Закрыть окно"
-            >
+            <button className="modal-close" onClick={() => setShowModal(false)}>
               ×
             </button>
-            <h3 id="modal-title" className="modal-title">
+            <h3 className="modal-title">
               {modalMode === 'add' && 'Добавить пользователя'}
               {modalMode === 'edit' && 'Редактировать пользователя'}
               {modalMode === 'password' && 'Изменить пароль'}
             </h3>
-            <form className="admin-form" onSubmit={handleSubmit} role="form" aria-label="Форма управления пользователем">
+            <form className="admin-form" onSubmit={handleSubmit}>
               {(modalMode === 'add' || modalMode === 'edit') && (
                 <>
                   <div className="form-group">
-                    <label htmlFor="user-email">Email</label>
+                    <label>Email</label>
                     <input
                       type="email"
-                      id="user-email"
                       value={formData.email}
                       onChange={e =>
                         setFormData({ ...formData, email: e.target.value })
                       }
                       required
-                      aria-required="true"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="user-role">Роль</label>
+                    <label>Роль</label>
                     <select
-                      id="user-role"
                       value={formData.role}
                       onChange={e =>
                         setFormData({ ...formData, role: e.target.value })
                       }
                       required
-                      aria-required="true"
                     >
                       <option value="user">Пользователь</option>
                       <option value="editor">Редактор</option>
@@ -197,28 +189,18 @@ export default function UserManagement() {
               )}
               {(modalMode === 'add' || modalMode === 'password') && (
                 <div className="form-group">
-                  <label htmlFor="user-password">Пароль</label>
+                  <label>Пароль</label>
                   <input
                     type="password"
-                    id="user-password"
                     value={formData.password}
                     onChange={e =>
                       setFormData({ ...formData, password: e.target.value })
                     }
                     required
-                    aria-required="true"
                   />
                 </div>
               )}
-              <button 
-                type="submit" 
-                className="action-button edit"
-                aria-label={
-                  modalMode === 'add' ? 'Добавить пользователя' :
-                  modalMode === 'edit' ? 'Сохранить изменения' :
-                  'Изменить пароль'
-                }
-              >
+              <button type="submit" className="action-button edit">
                 {modalMode === 'add' && 'Добавить'}
                 {modalMode === 'edit' && 'Сохранить'}
                 {modalMode === 'password' && 'Изменить пароль'}

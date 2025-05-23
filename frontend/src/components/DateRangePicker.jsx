@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useEffect, useRef, useState } from 'react'
+import PropTypes from 'prop-types'
 import './DateRangePicker.css'
 
 export default function DateRangePicker({ onRangeSelect }) {
@@ -8,17 +9,8 @@ export default function DateRangePicker({ onRangeSelect }) {
   const [selectedRange, setSelectedRange] = useState({ start: null, end: null })
   const [displayValue, setDisplayValue] = useState('Выберите даты')
   const [currentYear, setCurrentYear] = useState(2025)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [slideDirection, setSlideDirection] = useState(null)
   const calendarRef = useRef(null)
   const yearSelectorRef = useRef(null)
-  const yearsRef = useRef({
-    prevFar: currentYear - 2,
-    prev: currentYear - 1,
-    current: currentYear,
-    next: currentYear + 1,
-    nextFar: currentYear + 2,
-  })
 
   const months = [
     'Январь',
@@ -124,7 +116,7 @@ export default function DateRangePicker({ onRangeSelect }) {
   }
 
   const handleYearClick = year => {
-    if (year === currentYear || isAnimating) return
+    if (year === currentYear) return
     setCurrentYear(year)
   }
 
@@ -144,95 +136,111 @@ export default function DateRangePicker({ onRangeSelect }) {
 
   return (
     <div className="date-picker-container">
-      <div className="date-picker-input" onClick={() => setIsOpen(!isOpen)}>
+      <div 
+        className="date-picker-input" 
+        onClick={() => setIsOpen(!isOpen)}
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
+        aria-controls="calendar-popup"
+      >
         {displayValue}
       </div>
 
       {isOpen && (
         <div className="calendar-popup-overlay">
-          <div className="calendar-popup" ref={calendarRef}>
+          <div 
+            className="calendar-popup" 
+            ref={calendarRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Выбор даты"
+            id="calendar-popup"
+          >
             <div className="calendar-header">
               <button
                 onClick={() => handleYearClick(currentYear - 1)}
                 className="year-nav-button"
-                disabled={isAnimating}
+                disabled={false}
+                aria-label="Предыдущий год"
               >
                 ←
               </button>
-              <div className="year-selector" role="group" aria-label="Выбор года">
+              <div className="year-selector">
                 <div className="year-selector-inner" ref={yearSelectorRef}>
-                  <button
-                    type="button"
+                  <span
                     className="adjacent-year far"
                     onClick={() => handleYearClick(currentYear - 2)}
-                    aria-label={`Выбрать ${currentYear - 2} год`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Год ${currentYear - 2}`}
                   >
                     {currentYear - 2}
-                  </button>
-                  <button
-                    type="button"
+                  </span>
+                  <span
                     className="adjacent-year prev"
                     onClick={() => handleYearClick(currentYear - 1)}
-                    aria-label={`Выбрать ${currentYear - 1} год`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Год ${currentYear - 1}`}
                   >
                     {currentYear - 1}
-                  </button>
-                  <button
-                    type="button"
-                    className="current-year"
-                    aria-label={`Текущий год: ${currentYear}`}
-                    aria-current="true"
-                  >
-                    {currentYear}
-                  </button>
-                  <button
-                    type="button"
+                  </span>
+                  <span className="current-year" aria-label={`Текущий год ${currentYear}`}>{currentYear}</span>
+                  <span
                     className="adjacent-year next"
                     onClick={() => handleYearClick(currentYear + 1)}
-                    aria-label={`Выбрать ${currentYear + 1} год`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Год ${currentYear + 1}`}
                   >
                     {currentYear + 1}
-                  </button>
-                  <button
-                    type="button"
+                  </span>
+                  <span
                     className="adjacent-year far"
                     onClick={() => handleYearClick(currentYear + 2)}
-                    aria-label={`Выбрать ${currentYear + 2} год`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Год ${currentYear + 2}`}
                   >
                     {currentYear + 2}
-                  </button>
+                  </span>
                 </div>
               </div>
               <button
                 onClick={() => handleYearClick(currentYear + 1)}
                 className="year-nav-button"
-                disabled={isAnimating}
+                disabled={false}
                 aria-label="Следующий год"
               >
                 →
               </button>
             </div>
 
-            <div className="calendar-grid">
+            <div className="calendar-grid" role="grid">
               {Array.from({ length: 12 }, (_, monthIndex) => (
-                <div key={monthIndex} className="month-container">
+                <div key={monthIndex} className="month-container" role="gridcell">
                   <div className="month-header">{months[monthIndex]}</div>
-                  <div className="days-header">
-                    <div>Пн</div>
-                    <div>Вт</div>
-                    <div>Ср</div>
-                    <div>Чт</div>
-                    <div>Пт</div>
-                    <div>Сб</div>
-                    <div>Вс</div>
+                  <div className="days-header" role="row">
+                    <div role="columnheader">Пн</div>
+                    <div role="columnheader">Вт</div>
+                    <div role="columnheader">Ср</div>
+                    <div role="columnheader">Чт</div>
+                    <div role="columnheader">Пт</div>
+                    <div role="columnheader">Сб</div>
+                    <div role="columnheader">Вс</div>
                   </div>
-                  <div className="days-grid">
+                  <div className="days-grid" role="rowgroup">
                     {generateMonthDays(currentYear, monthIndex).map(
                       (date, index) => (
                         <div
                           key={index}
                           className={`day-cell ${getDateCellClass(date)}`}
                           onClick={() => date && handleDateClick(date)}
+                          role="gridcell"
+                          tabIndex={date ? 0 : -1}
+                          aria-label={date ? date.toLocaleDateString() : ''}
+                          aria-selected={date && isDateSelected(date)}
                         >
                           {date ? date.getDate() : ''}
                         </div>
@@ -244,13 +252,14 @@ export default function DateRangePicker({ onRangeSelect }) {
             </div>
 
             <div className="calendar-footer">
-              <button onClick={handleCancel} className="calendar-button cancel">
+              <button onClick={handleCancel} className="calendar-button cancel" aria-label="Отменить выбор даты">
                 Отменить
               </button>
               <button
                 onClick={handleConfirm}
                 className="calendar-button confirm"
                 disabled={!selectedRange.start || !selectedRange.end}
+                aria-label="Подтвердить выбор даты"
               >
                 Выбрать
               </button>
@@ -260,4 +269,8 @@ export default function DateRangePicker({ onRangeSelect }) {
       )}
     </div>
   )
+}
+
+DateRangePicker.propTypes = {
+  onRangeSelect: PropTypes.func
 }

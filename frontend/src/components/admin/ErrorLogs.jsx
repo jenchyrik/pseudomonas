@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getApiUrl } from '../../config/api'
+import '../../styles/admin.css'
 
 export default function ErrorLogs() {
   const [errorLogs, setErrorLogs] = useState([])

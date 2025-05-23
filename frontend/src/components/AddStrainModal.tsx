@@ -54,12 +54,12 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <dialog className="modal" open={open} aria-label="Добавление нового штамма">
         <form onSubmit={handleSubmit} className="form">
           <h2 className="form-title">Добавить новый штамм</h2>
           
           <div className="form-grid">
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="strainName">Наименование штамма</label>
               <input
                 type="text"
@@ -69,10 +69,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="crisprType">Тип CRISPR</label>
               <input
                 type="text"
@@ -82,10 +83,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="indelGenotype">Генотип indel</label>
               <input
                 type="text"
@@ -95,10 +97,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="serogroup">Серогруппа</label>
               <input
                 type="text"
@@ -108,10 +111,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="flagellarAntigen">Жгутиковый антиген</label>
               <select
                 id="flagellarAntigen"
@@ -120,6 +124,7 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-select"
+                aria-required="true"
               >
                 {Object.values(FlagellarAntigen).map((value) => (
                   <option key={value} value={value}>
@@ -127,9 +132,9 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                   </option>
                 ))}
               </select>
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="mucoidPhenotype">Мукоидный фенотип</label>
               <select
                 id="mucoidPhenotype"
@@ -138,6 +143,7 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-select"
+                aria-required="true"
               >
                 {Object.values(MucoidPhenotype).map((value) => (
                   <option key={value} value={value}>
@@ -145,17 +151,17 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                   </option>
                 ))}
               </select>
-            </div>
+            </fieldset>
 
-            <div className="exotoxin-group">
+            <fieldset className="exotoxin-group">
+              <legend>Экзотоксины</legend>
               <div className="exotoxin-control">
-                <label htmlFor="exoS">Экзотоксин S</label>
-                <div className="radio-group" role="radiogroup" aria-labelledby="exoS">
+                <label>Экзотоксин S</label>
+                <div className="radio-group" role="radiogroup" aria-label="Экзотоксин S">
                   <label className="radio-label">
                     <input
                       type="radio"
                       name="exoS"
-                      id="exoS-positive"
                       value={ExoStatus.POSITIVE}
                       checked={formData.exoS === ExoStatus.POSITIVE}
                       onChange={handleRadioChange('exoS')}
@@ -167,7 +173,6 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                     <input
                       type="radio"
                       name="exoS"
-                      id="exoS-negative"
                       value={ExoStatus.NEGATIVE}
                       checked={formData.exoS === ExoStatus.NEGATIVE}
                       onChange={handleRadioChange('exoS')}
@@ -179,8 +184,8 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
               </div>
 
               <div className="exotoxin-control">
-                <label htmlFor="exoU">Экзотоксин U</label>
-                <div className="radio-group">
+                <label>Экзотоксин U</label>
+                <div className="radio-group" role="radiogroup" aria-label="Экзотоксин U">
                   <label className="radio-label">
                     <input
                       type="radio"
@@ -188,6 +193,7 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                       value={ExoStatus.POSITIVE}
                       checked={formData.exoU === ExoStatus.POSITIVE}
                       onChange={handleRadioChange('exoU')}
+                      aria-label="Экзотоксин U положительный"
                     />
                     <span>+</span>
                   </label>
@@ -198,14 +204,15 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                       value={ExoStatus.NEGATIVE}
                       checked={formData.exoU === ExoStatus.NEGATIVE}
                       onChange={handleRadioChange('exoU')}
+                      aria-label="Экзотоксин U отрицательный"
                     />
                     <span>-</span>
                   </label>
                 </div>
               </div>
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="latitude">Широта</label>
               <input
                 type="number"
@@ -216,10 +223,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 required
                 step="any"
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="longitude">Долгота</label>
               <input
                 type="number"
@@ -230,10 +238,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 required
                 step="any"
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="date">Дата выделения</label>
               <input
                 type="date"
@@ -243,10 +252,11 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
 
-            <div className="form-group">
+            <fieldset className="form-group">
               <label htmlFor="isolationObject">Объект выделения</label>
               <input
                 type="text"
@@ -256,20 +266,30 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
                 onChange={handleChange}
                 required
                 className="form-input"
+                aria-required="true"
               />
-            </div>
+            </fieldset>
           </div>
 
           <div className="form-actions">
-            <button type="button" onClick={onClose} className="btn btn-secondary">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="btn btn-secondary"
+              aria-label="Отменить добавление штамма"
+            >
               Отмена
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              aria-label="Добавить штамм"
+            >
               Добавить
             </button>
           </div>
         </form>
-      </div>
+      </dialog>
     </div>
   );
 };

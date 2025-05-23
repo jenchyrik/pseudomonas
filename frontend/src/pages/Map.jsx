@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas'
 import { useRef, useState } from 'react'
+import '../styles/Map.css'
 
 const Map = ({ user, onLogout }) => {
   const mapRef = useRef(null)

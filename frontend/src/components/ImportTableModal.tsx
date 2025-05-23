@@ -58,12 +58,23 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
     }
   }, [open]);
 
-  const handleClose = () => {
+  const handleClose = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setFile(null);
     setError(null);
     setSuccess(null);
     setLoading(false);
     onClose();
+  };
+
+  // Добавляем обработчик для закрытия по клику вне модального окна
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
   };
 
   const parseDate = (dateValue: any): string => {
@@ -89,37 +100,43 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
 
     // Если это строка
     if (typeof dateValue === 'string') {
+      // Удаляем лишние пробелы
+      const trimmedValue = dateValue.trim();
+      
       // Пробуем разные форматы даты
       const dateFormats = [
-        'DD.MM.YYYY',
-        'YYYY-MM-DD',
-        'DD/MM/YYYY',
-        'YYYY/MM/DD'
+        { pattern: /^(\d{2})\.(\d{2})\.(\d{4})$/, handler: (match: RegExpMatchArray) => {
+          const [_, day, month, year] = match;
+          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        }},
+        { pattern: /^(\d{4})-(\d{2})-(\d{2})$/, handler: (match: RegExpMatchArray) => {
+          const [_, year, month, day] = match;
+          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        }},
+        { pattern: /^(\d{2})\/(\d{2})\/(\d{4})$/, handler: (match: RegExpMatchArray) => {
+          const [_, day, month, year] = match;
+          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        }},
+        { pattern: /^(\d{4})\/(\d{2})\/(\d{2})$/, handler: (match: RegExpMatchArray) => {
+          const [_, year, month, day] = match;
+          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        }}
       ];
 
       for (const format of dateFormats) {
-        try {
-          let date: Date;
-          
-          if (format === 'DD.MM.YYYY') {
-            const [day, month, year] = dateValue.split('.');
-            date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-          } else if (format === 'YYYY-MM-DD') {
-            date = new Date(dateValue);
-          } else if (format === 'DD/MM/YYYY') {
-            const [day, month, year] = dateValue.split('/');
-            date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-          } else if (format === 'YYYY/MM/DD') {
-            const [year, month, day] = dateValue.split('/');
-            date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-          }
-
+        const match = trimmedValue.match(format.pattern);
+        if (match) {
+          const date = format.handler(match);
           if (date && !isNaN(date.getTime())) {
             return date.toISOString();
           }
-        } catch (e) {
-          continue;
         }
+      }
+
+      // Если не удалось распарсить ни один формат, пробуем напрямую
+      const directDate = new Date(trimmedValue);
+      if (!isNaN(directDate.getTime())) {
+        return directDate.toISOString();
       }
     }
 
@@ -131,7 +148,7 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
       return dateValue.toISOString();
     }
 
-    throw new Error(`Неподдерживаемый формат даты: ${dateValue}`);
+    throw new Error(`Неподдерживаемый формат даты: ${dateValue}. Поддерживаемые форматы: ДД.ММ.ГГГГ, ГГГГ-ММ-ДД, ДД/ММ/ГГГГ, ГГГГ/ММ/ДД`);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,6 +171,9 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     const reader = new FileReader();
 
     reader.onload = async (e) => {
@@ -164,6 +184,29 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
         const jsonData = XLSX.utils.sheet_to_json<ImportedRow>(worksheet);
 
         console.log('Imported Excel data:', jsonData);
+
+        if (jsonData.length === 0) {
+          throw new Error('Файл не содержит данных');
+        }
+
+        // Выводим все доступные поля из первой строки для отладки
+        console.log('Available fields:', Object.keys(jsonData[0]));
+
+        // Проверяем наличие обязательных полей с учетом возможных вариантов названий
+        const dateColumnNames = ['Дата', 'дата', 'ДАТА', 'Date', 'date', 'DATE', 'Дата выделения', 'дата выделения'];
+        const dateField = Object.keys(jsonData[0]).find(key => dateColumnNames.includes(key));
+
+        if (!dateField) {
+          throw new Error(`В таблице отсутствует столбец с датой. Возможные названия: ${dateColumnNames.join(', ')}`);
+        }
+
+        // Проверяем остальные обязательные поля
+        const requiredFields = ['Название штамма', 'Широта', 'Долгота'];
+        const missingFields = requiredFields.filter(field => !jsonData[0].hasOwnProperty(field));
+        
+        if (missingFields.length > 0) {
+          throw new Error(`В таблице отсутствуют обязательные поля: ${missingFields.join(', ')}`);
+        }
 
         // Получаем существующие точки для проверки дубликатов
         const existingPointsResponse = await fetch(getApiUrl('/points'), {
@@ -193,22 +236,25 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
 
         for (const row of jsonData) {
           try {
-            const parsedDate = parseDate(row['Дата']);
+            const dateValue = row[dateField];
+            console.log('Processing date value:', dateValue, 'from field:', dateField);
+            
+            const parsedDate = parseDate(dateValue);
             if (!parsedDate) {
               throw new Error('Неверный формат даты');
             }
 
             const point: Point = {
               strainName: row['Название штамма'],
-              crisprType: row['CRISPR тип'],
-              indelGenotype: row['Indel генотип'],
-              serogroup: row['Серогруппа'],
-              flagellarAntigen: row['Тип жгутикового антигена'],
-              mucoidPhenotype: row['Мукоидный фенотип'],
-              exoS: row['ExoS'],
-              exoU: row['ExoU'],
+              crisprType: row['CRISPR тип'] || '',
+              indelGenotype: row['Indel генотип'] || '',
+              serogroup: row['Серогруппа'] || '',
+              flagellarAntigen: row['Тип жгутикового антигена'] || '',
+              mucoidPhenotype: row['Мукоидный фенотип'] || '',
+              exoS: row['ExoS'] || '',
+              exoU: row['ExoU'] || '',
               date: parsedDate,
-              isolationObject: row['Объект выделения'],
+              isolationObject: row['Объект выделения'] || '',
               latitude: typeof row['Широта'] === 'string' ? parseFloat(row['Широта']) : row['Широта'],
               longitude: typeof row['Долгота'] === 'string' ? parseFloat(row['Долгота']) : row['Долгота'],
               createdAt: new Date().toISOString(),
@@ -291,51 +337,93 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
-        <div className="import-container">
-          <h2 className="import-title">Импорт таблицы</h2>
+      <dialog 
+        className="modal" 
+        open={open} 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="import-modal-title"
+      >
+        <form className="import-container" onSubmit={(e) => { e.preventDefault(); handleImport(); }}>
+          <h2 id="import-modal-title" className="import-title">Импорт таблицы</h2>
+          
           <div className="import-content">
             <div className="file-upload">
+              <label htmlFor="file-input" className="file-label">
+                Выберите файл Excel
+              </label>
               <input
+                id="file-input"
                 type="file"
                 accept=".xlsx,.xls"
                 onChange={handleFileChange}
                 className="file-input"
+                aria-label="Выберите файл Excel для импорта"
               />
-              <button 
-                className="import-button"
-                onClick={handleImport}
-                disabled={!file || loading}
-              >
-                {loading ? 'Импорт...' : 'Импортировать'}
-              </button>
+              {file && (
+                <p className="file-name" aria-live="polite">
+                  Выбран файл: {file.name}
+                </p>
+              )}
             </div>
-            {error && <p className="error-message">{error}</p>}
-            {success && <p className="success-message">{success}</p>}
-            <p className="import-info">
-              Поддерживаемые форматы: .xlsx, .xls<br />
-              Структура таблицы (порядок столбцов):<br />
-              1. Название штамма<br />
-              2. CRISPR тип<br />
-              3. Indel генотип<br />
-              4. Серогруппа<br />
-              5. Тип жгутикового антигена<br />
-              6. Мукоидный фенотип<br />
-              7. ExoS<br />
-              8. ExoU<br />
-              9. Дата (в формате ДД.ММ.ГГГГ)<br />
-              10. Объект выделения<br />
-              11. Широта<br />
-              12. Долгота<br />
-              <br />
-              Примечание: для пустых ячеек используйте прочерк (-)
-            </p>
+
+            {error && (
+              <div className="error-message" role="alert" aria-live="assertive">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="success-message" role="status" aria-live="polite">
+                {success}
+              </div>
+            )}
           </div>
-          <button className="close-button" onClick={handleClose}>
-            Закрыть
-          </button>
-        </div>
-      </div>
+
+          <div className="modal-actions">
+            <button
+              type="submit"
+              className="import-button"
+              disabled={!file || loading}
+              aria-busy={loading}
+            >
+              {loading ? 'Импорт...' : 'Импортировать'}
+            </button>
+          </div>
+
+          <section className="import-info" aria-label="Информация о формате таблицы">
+            <h3>Поддерживаемые форматы: .xlsx, .xls</h3>
+            <h4>Структура таблицы (порядок столбцов):</h4>
+            <ol>
+              <li>Название штамма</li>
+              <li>CRISPR тип</li>
+              <li>Indel генотип</li>
+              <li>Серогруппа</li>
+              <li>Тип жгутикового антигена</li>
+              <li>Мукоидный фенотип</li>
+              <li>ExoS</li>
+              <li>ExoU</li>
+              <li>Дата (в формате ДД.ММ.ГГГГ)</li>
+              <li>Объект выделения</li>
+              <li>Широта</li>
+              <li>Долгота</li>
+            </ol>
+            <p>Примечание: для пустых ячеек используйте прочерк (-)</p>
+          </section>
+        </form>
+        <button
+          type="button"
+          className="cancel-button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleClose();
+          }}
+          aria-label="Отменить импорт"
+        >
+          Отмена
+        </button>
+      </dialog>
     </div>
   );
 };
