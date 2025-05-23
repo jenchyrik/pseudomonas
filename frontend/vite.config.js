@@ -17,9 +17,18 @@ export default defineConfig({
   build: {
     assetsDir: 'assets',
     rollupOptions: {
+      input: {
+        main: './index.html',
+        client: './src/entry-client.jsx',
+        server: './src/entry-server.jsx'
+      },
       output: {
         assetFileNames: 'assets/[name].[ext]'
       }
     }
+  },
+  ssr: {
+    // SSR specific options
+    noExternal: ['react-router-dom']
   }
 })
