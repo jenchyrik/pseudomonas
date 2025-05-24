@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MucoidPhenotype, ExoStatus, FlagellarAntigen } from '../types/point';
-import './AddStrainModal.css';
+import './AddStrainModal.scss';
 
 interface AddStrainModalProps {
   open: boolean;
@@ -273,19 +273,19 @@ const AddStrainModal: React.FC<AddStrainModalProps> = ({ open, onClose, onSubmit
 
           <div className="form-actions">
             <button 
+              type="submit" 
+              className="btn btn-primary"
+              aria-label="Добавить штамм"
+            >
+              Добавить
+            </button>
+            <button 
               type="button" 
               onClick={onClose} 
               className="btn btn-secondary"
               aria-label="Отменить добавление штамма"
             >
               Отмена
-            </button>
-            <button 
-              type="submit" 
-              className="btn btn-primary"
-              aria-label="Добавить штамм"
-            >
-              Добавить
             </button>
           </div>
         </form>

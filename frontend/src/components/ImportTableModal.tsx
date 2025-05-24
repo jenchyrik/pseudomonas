@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './ImportTableModal.css';
+import './ImportTableModal.scss';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
@@ -336,7 +336,7 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
   if (!open) return null;
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" onClick={handleOverlayClick}>
       <dialog 
         className="modal" 
         open={open} 
@@ -357,6 +357,11 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
                 className="file-input"
                 aria-label="Выберите файл Excel для импорта"
               />
+              <label htmlFor="file-input" className="file-input-label">
+                <div className="upload-icon">📁</div>
+                <div className="upload-text">Выберите файл</div>
+                <div className="upload-hint">или перетащите файл сюда</div>
+              </label>
               {file && (
                 <p className="file-name" aria-live="polite">
                   Выбран файл: {file.name}
@@ -375,17 +380,6 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
                 {success}
               </div>
             )}
-          </div>
-
-          <div className="modal-actions">
-            <button
-              type="submit"
-              className="import-button"
-              disabled={!file || loading}
-              aria-busy={loading}
-            >
-              {loading ? 'Импорт...' : 'Импортировать'}
-            </button>
           </div>
 
           <section className="import-info" aria-label="Информация о формате таблицы">
@@ -407,19 +401,26 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
             </ol>
             <p>Примечание: для пустых ячеек используйте прочерк (-)</p>
           </section>
+
+          <div className="modal-actions">
+            <button
+              type="submit"
+              className="import-button"
+              disabled={!file || loading}
+              aria-busy={loading}
+            >
+              {loading ? 'Импорт...' : 'Импортировать'}
+            </button>
+            <button
+              type="button"
+              className="cancel-button"
+              onClick={handleClose}
+              aria-label="Отменить импорт"
+            >
+              Отмена
+            </button>
+          </div>
         </form>
-        <button
-          type="button"
-          className="cancel-button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleClose();
-          }}
-          aria-label="Отменить импорт"
-        >
-          Отмена
-        </button>
       </dialog>
     </div>
   );

@@ -1,7 +1,7 @@
 import html2canvas from 'html2canvas'
 import PropTypes from 'prop-types'
 import { useCallback, useEffect, useState } from 'react'
-import './SaveImageModal.css'
+import './SaveImageModal.scss'
 
 export default function SaveImageModal({ isOpen, onClose, mapInstance }) {
   const [imageFormat, setImageFormat] = useState('png')

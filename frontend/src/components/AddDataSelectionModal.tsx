@@ -1,5 +1,5 @@
 import React from 'react';
-import './AddDataSelectionModal.css';
+import './AddDataSelectionModal.scss';
 
 interface AddDataSelectionModalProps {
   open: boolean;

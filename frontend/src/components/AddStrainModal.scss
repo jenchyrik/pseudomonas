@@ -1,0 +1,260 @@
+@use "sass:color";
+
+// Variables
+$modal-overlay-bg: rgba(0, 0, 0, 0.5);
+$modal-bg: white;
+$modal-radius: 8px;
+$modal-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+$modal-padding: 20px;
+
+$title-color: #333;
+$title-size: 24px;
+$title-margin: 0 0 12px 0;
+
+$form-gap: 12px;
+$form-grid-gap: 6px;
+
+$label-color: #333;
+$label-size: 13px;
+$label-weight: 500;
+$label-margin: 1px;
+
+$input-padding: 6px 12px;
+$input-height: 40px;
+$input-border: 1px solid #ddd;
+$input-radius: 1000px;
+$input-transition: border-color 0.2s;
+
+$button-radius: 1000px;
+$button-padding: 8px 20px;
+$button-font-size: 14px;
+$button-transition: all 0.2s;
+
+$primary-color: #6a7677;
+$secondary-color: #f8f9fa;
+$text-color: #333;
+
+// Modal Overlay
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $modal-overlay-bg;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+// Modal
+.modal {
+  background: $modal-bg;
+  padding: $modal-padding;
+  border-radius: 16px;
+  box-shadow: $modal-shadow;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: auto;
+  position: relative;
+  border: none;
+
+  &::backdrop {
+    background-color: $modal-overlay-bg;
+  }
+}
+
+// Form
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $form-gap;
+}
+
+.form-title {
+  font-size: $title-size;
+  font-weight: 600;
+  color: $title-color;
+  margin: $title-margin;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $form-grid-gap;
+}
+
+// Form Groups
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  &:nth-child(5),
+  &:nth-child(6) {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  legend {
+    display: none;
+  }
+
+  label {
+    font-size: $label-size;
+    color: $label-color;
+    font-weight: $label-weight;
+    margin-bottom: $label-margin;
+  }
+}
+
+// Form Inputs
+.modal .form .form-input {
+  width: 100% !important;
+  height: $input-height !important;
+  padding: 8px 12px !important;
+  font-size: $label-size !important;
+  color: $text-color !important;
+  background-color: white !important;
+  border: $input-border !important;
+  border-radius: 16px !important;
+  transition: $input-transition !important;
+  box-sizing: border-box !important;
+
+  &:focus {
+    outline: none !important;
+    border-color: $primary-color !important;
+    box-shadow: 0 0 0 2px rgba($primary-color, 0.1) !important;
+  }
+}
+
+// Exotoxin Group
+.exotoxin-group {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  grid-column: 1 / -1;
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  legend {
+    display: none;
+  }
+}
+
+.exotoxin-control {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: $label-size;
+    color: $label-color;
+    font-weight: $label-weight;
+    margin-bottom: $label-margin;
+  }
+}
+
+.radio-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+
+  input[type="radio"] {
+    margin: 0;
+  }
+
+  span {
+    font-size: $label-size;
+    color: $label-color;
+  }
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.btn {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 1000px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1976D2;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background-color: white;
+  color: #2196F3;
+  border: 1px solid #2196F3;
+}
+
+.btn-secondary:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+// Form Select
+.modal .form .form-select {
+  width: 100% !important;
+  height: $input-height !important;
+  padding: 8px 32px 8px 12px !important;
+  font-size: $label-size !important;
+  color: $text-color !important;
+  background-color: white !important;
+  border: $input-border !important;
+  border-radius: 16px !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 8px center !important;
+  background-size: 16px !important;
+
+  &:focus {
+    outline: none !important;
+    border-color: $primary-color !important;
+    box-shadow: 0 0 0 2px rgba($primary-color, 0.1) !important;
+  }
+} 

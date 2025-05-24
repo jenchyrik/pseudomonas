@@ -1,0 +1,244 @@
+@use "sass:color";
+
+// Variables
+$modal-overlay-bg: rgba(0, 0, 0, 0.5);
+$modal-bg: white;
+$modal-radius: 8px;
+$modal-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+$modal-padding: 20px;
+
+$title-color: #333;
+$title-size: 24px;
+$title-margin: 0 0 12px 0;
+
+$form-gap: 12px;
+$form-grid-gap: 6px;
+
+$label-color: #333;
+$label-size: 13px;
+$label-weight: 500;
+$label-margin: 1px;
+
+$input-padding: 6px 12px;
+$input-height: 40px;
+$input-border: 1px solid #ddd;
+$input-radius: 1000px;
+$input-transition: border-color 0.2s;
+
+$primary-color: #6a7677;
+$secondary-color: #f8f9fa;
+$text-color: #333;
+
+// Modal Overlay
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $modal-overlay-bg;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+// Modal
+.modal {
+  background: $modal-bg;
+  padding: $modal-padding;
+  border-radius: 16px;
+  box-shadow: $modal-shadow;
+  width: 500px;
+  max-height: 90vh;
+  position: relative;
+  border: none;
+}
+
+// Import Container
+.import-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+}
+
+.import-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin: 0 0 15px 0;
+}
+
+.import-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-upload {
+  position: relative;
+  width: 100%;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 65px;
+  border: 2px dashed #ddd;
+  border-radius: 16px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.2s;
+  margin: 8px 0;
+}
+
+.file-input-label:hover {
+  border-color: #6a7677;
+  background-color: #f0f0f0;
+}
+
+.upload-icon {
+  font-size: 18px;
+  color: #6a7677;
+  margin-bottom: 2px;
+}
+
+.upload-text {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 10px;
+  color: #666;
+}
+
+.file-name {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #333;
+  text-align: center;
+  word-break: break-all;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.success-message {
+  color: #28a745;
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.import-button {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 1000px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.import-button:hover:not(:disabled) {
+  background-color: #1976D2;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.import-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cancel-button {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: white;
+  color: #2196F3;
+  border: 1px solid #2196F3;
+  border-radius: 1000px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-button:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.import-info {
+  margin-top: 10px;
+  padding: 12px;
+  background-color: #fafafa;
+  border-radius: 16px;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #666;
+}
+
+.import-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+}
+
+.import-info h4 {
+  margin: 8px 0 4px 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #444;
+}
+
+.import-info ol {
+  margin: 0;
+  padding-left: 12px;
+}
+
+.import-info li {
+  margin-bottom: 2px;
+}
+
+.import-info p {
+  margin: 4px 0 0 0;
+  font-style: italic;
+  color: #777;
+  font-size: 9px;
+} 

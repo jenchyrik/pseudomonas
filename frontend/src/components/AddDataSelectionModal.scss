@@ -1,0 +1,119 @@
+// Variables
+$modal-overlay-bg: rgba(0, 0, 0, 0.5);
+$modal-bg: white;
+$modal-radius: 20px;
+$modal-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+$modal-padding: 24px;
+$modal-width: 400px;
+
+$title-color: #333;
+$title-size: 20px;
+
+$selection-gap: 20px;
+$selection-padding-bottom: 60px;
+
+$button-radius: 1000px;
+$button-padding: 12px 20px;
+$button-font-size: 14px;
+$button-transition: all 0.2s;
+
+$button-gradient-start: #6a7677;
+$button-gradient-end: #565e5e;
+$button-hover-start: #778586;
+$button-hover-end: #667272;
+
+$close-button-bg: #f8f9fa;
+$close-button-hover: #e9ecef;
+
+// Modal Overlay
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $modal-overlay-bg;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+// Modal
+.modal {
+  background: $modal-bg;
+  border-radius: $modal-radius;
+  padding: $modal-padding;
+  width: $modal-width;
+  box-shadow: $modal-shadow;
+  position: relative;
+}
+
+// Selection Container
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: $selection-gap;
+  padding-bottom: $selection-padding-bottom;
+}
+
+// Selection Title
+.selection-title {
+  font-size: $title-size;
+  font-weight: 600;
+  color: $title-color;
+  margin: 0;
+  text-align: center;
+}
+
+// Selection Buttons
+.selection-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+// Selection Button
+.selection-button {
+  flex: 1;
+  padding: $button-padding;
+  border: none;
+  border-radius: $button-radius;
+  font-size: $button-font-size;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $button-transition;
+  background: linear-gradient(to right, $button-gradient-start, $button-gradient-end);
+  color: white;
+
+  &:hover {
+    background: linear-gradient(to right, $button-hover-start, $button-hover-end);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Close Button
+.close-button {
+  position: absolute;
+  bottom: $modal-padding;
+  right: $modal-padding;
+  padding: $button-padding;
+  border: none;
+  border-radius: $button-radius;
+  font-size: $button-font-size;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $button-transition;
+  background-color: $close-button-bg;
+  color: $title-color;
+
+  &:hover {
+    background-color: $close-button-hover;
+  }
+} 
