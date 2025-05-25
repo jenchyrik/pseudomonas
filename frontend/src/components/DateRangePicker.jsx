@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
+import { createPortal } from 'react-dom'
 import './DateRangePicker.scss'
 
 export default function DateRangePicker({ onRangeSelect }) {
@@ -147,7 +148,7 @@ export default function DateRangePicker({ onRangeSelect }) {
         {displayValue}
       </div>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div className="calendar-popup-overlay">
           <div 
             className="calendar-popup" 
@@ -265,7 +266,8 @@ export default function DateRangePicker({ onRangeSelect }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

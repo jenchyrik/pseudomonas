@@ -3,7 +3,7 @@
 
 // Variables
 $panel-padding: 40px;
-$panel-margin: 15px;
+$panel-margin: 30px;
 $panel-radius: 40px;
 $panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 $panel-border: #eee;
@@ -34,8 +34,8 @@ $transition-duration: 0.2s;
   padding: $panel-padding;
   width: calc(100% - #{$panel-margin * 2});
   max-width: calc(100% - #{$panel-margin * 2});
-  margin: $panel-margin auto;
-  height: calc(100vh - 90px);
+  margin: $panel-margin;
+  height: calc(100vh - 90px - #{$panel-margin * 2});
   background: white;
   border-radius: $panel-radius;
   box-shadow: $panel-shadow;
@@ -44,17 +44,6 @@ $transition-duration: 0.2s;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  &::after {
-    content: '';
-    display: block;
-    height: 100px;
-    width: 100%;
-    position: absolute;
-    bottom: -100px;
-    left: 0;
-    background: transparent;
-  }
 }
 
 // Title
@@ -95,6 +84,14 @@ $transition-duration: 0.2s;
   }
 }
 
+// Media Queries
+@media screen and (max-width: 780px) {
+  .tab-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
 // Content
 .admin-content {
   background: white;
@@ -107,7 +104,7 @@ $transition-duration: 0.2s;
   padding-bottom: 10px;
 }
 
-// Table
+// Table Container
 .table-container {
   flex: 1;
   overflow: auto;
@@ -115,6 +112,7 @@ $transition-duration: 0.2s;
   flex-direction: column;
   border: 1px solid $panel-border;
   border-radius: $table-radius;
+  margin-bottom: 0;
 }
 
 .admin-table {
@@ -249,6 +247,15 @@ $transition-duration: 0.2s;
   }
 }
 
+// Media Queries
+@media screen and (max-width: 1220px) {
+  .action-button {
+    display: block;
+    width: 100%;
+    margin: 4px 0;
+  }
+}
+
 // Form
 .admin-form {
   display: flex;
@@ -258,7 +265,6 @@ $transition-duration: 0.2s;
 
   button[type="submit"] {
     margin-top: auto;
-    padding: 12px 24px;
     border: none;
     border-radius: $button-radius;
     background: $primary-color;
@@ -313,6 +319,7 @@ $transition-duration: 0.2s;
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
+    z-index: 1003;
   }
 
   .modal-content {
@@ -329,6 +336,7 @@ $transition-duration: 0.2s;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    z-index: 1004;
   }
 
   .modal-close {
@@ -551,17 +559,17 @@ select {
   .admin-table {
     th:nth-child(1),
     td:nth-child(1) {
-      width: 30px;
+      width: 120px;
     }
 
     th:nth-child(2),
     td:nth-child(2) {
-      width: 120px;
+      width: 80px;
     }
 
     th:nth-child(3),
     td:nth-child(3) {
-      width: 80px;
+      width: 70px;
     }
 
     th:nth-child(4),
@@ -571,13 +579,23 @@ select {
 
     th:last-child,
     td:last-child {
-      width: 200px;
+      width: 120px;
     }
   }
 }
 
 // Points Container
 .points-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+
+  .table-container {
+    flex: 1;
+    overflow: auto;
+  }
+
   .admin-table {
     th:nth-child(1),
     td:nth-child(1) {
@@ -599,56 +617,6 @@ select {
       width: 80px;
     }
 
-    th:nth-child(5),
-    td:nth-child(5) {
-      width: 80px;
-    }
-
-    th:nth-child(6),
-    td:nth-child(6) {
-      width: 80px;
-    }
-
-    th:nth-child(7),
-    td:nth-child(7) {
-      width: 80px;
-    }
-
-    th:nth-child(8),
-    td:nth-child(8) {
-      width: 80px;
-    }
-
-    th:nth-child(9),
-    td:nth-child(9) {
-      width: 80px;
-    }
-
-    th:nth-child(10),
-    td:nth-child(10) {
-      width: 80px;
-    }
-
-    th:nth-child(11),
-    td:nth-child(11) {
-      width: 80px;
-    }
-
-    th:nth-child(12),
-    td:nth-child(12) {
-      width: 80px;
-    }
-
-    th:nth-child(13),
-    td:nth-child(13) {
-      width: 80px;
-    }
-
-    th:nth-child(14),
-    td:nth-child(14) {
-      width: 80px;
-    }
-
     th:last-child,
     td:last-child {
       width: 200px;
@@ -658,6 +626,17 @@ select {
   .action-button.edit,
   .action-button.delete {
     margin-right: 8px;
+  }
+}
+
+// Media Queries
+@media screen and (max-width: 1320px) {
+  .points-container {
+    .action-button {
+      display: block;
+      width: 100%;
+      margin: 4px 0;
+    }
   }
 }
 
@@ -710,6 +689,252 @@ select {
           background: color.adjust($background-light, $lightness: -5%);
         }
       }
+    }
+  }
+}
+
+// Media Queries
+@media screen and (max-width: 1020px) {
+  .admin-table {
+    th,
+    td {
+      font-size: 11px;
+      padding: 6px 2px;
+    }
+
+    .action-button {
+      font-size: 11px;
+      padding: 3px 8px;
+      height: 24px;
+      min-width: 70px;
+    }
+  }
+
+  .users-container,
+  .points-container {
+    .admin-table {
+      th:last-child,
+      td:last-child {
+        width: 100px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .admin-table {
+    th,
+    td {
+      font-size: 10px;
+      padding: 4px 1px;
+    }
+
+    .action-button {
+      font-size: 10px;
+      padding: 2px 6px;
+      height: 20px;
+      min-width: 60px;
+    }
+  }
+
+  .tab-button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .admin-title {
+    font-size: 20px;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .admin-panel {
+    .modal-content {
+      width: 90%;
+      max-width: 320px;
+      padding: 15px;
+      max-height: 400px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+    }
+
+    .modal-form {
+      gap: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+
+      .form-group {
+        label {
+          font-size: 12px;
+          margin-bottom: 4px;
+        }
+
+        input, select {
+          padding: 8px 12px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .modal-buttons {
+      gap: 8px;
+      padding-top: 15px;
+
+      button {
+        padding: 6px 12px;
+        font-size: 12px;
+        max-width: 140px;
+      }
+    }
+  }
+
+  .points-container {
+    .admin-table {
+      th:nth-child(1),
+      td:nth-child(1),
+      th:nth-child(3),
+      td:nth-child(3),
+      th:nth-child(4),
+      td:nth-child(4) {
+        display: none;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 60%;
+      }
+
+      th:last-child,
+      td:last-child {
+        width: 40%;
+      }
+    }
+  }
+
+  .users-container {
+    .admin-table {
+      th:nth-child(1),
+      td:nth-child(1) {
+        display: none;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 40%;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 30%;
+      }
+
+      th:last-child,
+      td:last-child {
+        width: 30%;
+      }
+    }
+  }
+
+  .tab-button {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  .admin-tabs {
+    gap: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+
+  .admin-header .add-data-button,
+  .add-data-button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    height: 28px !important;
+  }
+}
+
+@media screen and (max-width: 490px) {
+  .admin-panel {
+    padding: 20px;
+    margin: 15px;
+    width: calc(100% - 30px);
+    max-width: calc(100% - 30px);
+    height: calc(100vh - 90px - 30px);
+  }
+
+  .admin-table {
+    th,
+    td {
+      font-size: 9px;
+      padding: 3px 1px;
+    }
+
+    .action-button {
+      font-size: 9px;
+      padding: 2px 4px;
+      height: 18px;
+      min-width: 50px;
+    }
+  }
+
+  .admin-panel {
+    .modal-buttons {
+      button {
+        font-size: 10px;
+        padding: 4px 8px;
+        height: 24px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .tab-button {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+
+  .admin-tabs {
+    gap: 4px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+  }
+
+  .admin-title {
+    font-size: 18px;
+  }
+
+  .admin-header .add-data-button,
+  .add-data-button {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+    height: 24px !important;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .admin-panel {
+    .modal-buttons {
+      button {
+        font-size: 7px;
+      }
+    }
+
+    .action-button {
+      font-size: 7px;
+    }
+
+    .tab-button {
+      font-size: 7px;
+    }
+
+    .add-data-button {
+      font-size: 7px;
     }
   }
 } 

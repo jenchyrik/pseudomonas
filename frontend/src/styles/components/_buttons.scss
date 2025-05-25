@@ -40,6 +40,22 @@ $transition-duration: 0.2s;
   }
 }
 
+@media screen and (max-width: 560px) {
+  .add-data-button {
+    padding: 6px 12px;
+    font-size: 12px;
+    height: 28px;
+  }
+}
+
+@media screen and (max-width: 490px) {
+  .add-data-button {
+    padding: 4px 8px;
+    font-size: 10px;
+    height: 24px;
+  }
+}
+
 // Zoom buttons
 .zoom-buttons {
   display: flex;

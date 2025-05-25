@@ -38,7 +38,7 @@ export default function Auth({ onAuth }) {
 
   return (
     <div className="auth-container">
-      <h1 className="system-title">ГИС по P.aeruginosa</h1>
+      <h1 className="system-title">ГИС по Pseudomonas aeruginosa</h1>
       <div className="auth-form-container">
         <h2>Вход в систему</h2>
 

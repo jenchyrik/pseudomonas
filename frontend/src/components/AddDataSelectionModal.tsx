@@ -29,7 +29,7 @@ const AddDataSelectionModal: React.FC<AddDataSelectionModalProps> = ({
               Импортировать таблицу
             </button>
           </div>
-          <button className="close-button" onClick={onClose}>
+          <button className="cancel-button" onClick={onClose}>
             Отмена
           </button>
         </div>

@@ -4,14 +4,14 @@ $modal-bg: white;
 $modal-radius: 40px;
 $modal-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 $modal-border: #eee;
-$modal-padding: 30px;
+$modal-padding: 20px;
 
 $title-color: #333;
 $title-size: 24px;
 
 $preview-bg: #f8f9fa;
 $preview-radius: 20px;
-$preview-min-width: 800px;
+$preview-min-width: 600px;
 
 $controls-bg: #f8f9fa;
 $controls-radius: 20px;
@@ -39,7 +39,7 @@ $border-color: #e0e0e0;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
   backdrop-filter: blur(4px);
 }
 
@@ -48,14 +48,15 @@ $border-color: #e0e0e0;
   background: $modal-bg;
   padding: $modal-padding;
   border-radius: $modal-radius;
-  width: 95%;
-  max-width: 1200px;
+  width: 98%;
+  max-width: 1400px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   gap: 20px;
   box-shadow: $modal-shadow;
   border: 1px solid $modal-border;
+  z-index: 10000;
 
   h2 {
     margin: 0;
@@ -68,7 +69,7 @@ $border-color: #e0e0e0;
 // Modal Content
 .modal-content {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   min-height: 600px;
   height: 70vh;
   width: 100%;

@@ -1,0 +1,44 @@
+// Add Data Button
+.add-data-button {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  transform: none !important;
+  padding: 8px 16px !important;
+  background: #495057 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: $button-radius !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  z-index: 99 !important;
+  box-shadow: $button-shadow !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  min-width: 150px !important;
+
+  .download-icon {
+    width: 14px !important;
+    height: 14px !important;
+    fill: currentColor !important;
+  }
+
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  &:hover {
+    background: #6c757d !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+  }
+} 

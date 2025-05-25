@@ -28,6 +28,12 @@ $input-transition: border-color 0.2s;
 $primary-color: #6a7677;
 $secondary-color: #f8f9fa;
 $text-color: #333;
+$text-color-light: #666;
+
+$button-padding: 8px 16px;
+$button-radius: 4px;
+$button-font-size: 14px;
+$button-transition: all 0.2s ease;
 
 // Modal Overlay
 .modal-overlay {
@@ -55,31 +61,89 @@ $text-color: #333;
   border: none;
 }
 
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  z-index: 1;
+
+  &:hover {
+    background: #f5f5f5;
+    color: #333;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background-color: currentColor;
+    transform-origin: center;
+  }
+
+  &::before {
+    transform: rotate(45deg);
+  }
+
+  &::after {
+    transform: rotate(-45deg);
+  }
+}
+
 // Import Container
 .import-container {
   display: flex;
   flex-direction: column;
   height: 100%;
   gap: 15px;
+  padding-bottom: 60px;
+  position: relative;
 }
 
+// Import Title
 .import-title {
-  font-size: 20px;
+  font-size: $title-size;
   font-weight: 600;
-  color: #333;
+  color: $title-color;
+  margin: $title-margin;
   text-align: center;
-  margin: 0 0 15px 0;
 }
 
+// Import Content
 .import-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
 }
 
+// File Upload
 .file-upload {
-  position: relative;
-  width: 100%;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: $primary-color;
+  }
 }
 
 .file-input {
@@ -90,62 +154,66 @@ $text-color: #333;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 65px;
-  border: 2px dashed #ddd;
-  border-radius: 16px;
-  background-color: #f8f9fa;
+  gap: 10px;
   cursor: pointer;
-  padding: 12px;
-  text-align: center;
-  transition: all 0.2s;
-  margin: 8px 0;
-}
-
-.file-input-label:hover {
-  border-color: #6a7677;
-  background-color: #f0f0f0;
 }
 
 .upload-icon {
-  font-size: 18px;
-  color: #6a7677;
-  margin-bottom: 2px;
+  font-size: 24px;
 }
 
 .upload-text {
-  font-size: 12px;
-  color: #333;
-  margin-bottom: 2px;
+  font-size: 16px;
   font-weight: 500;
+  color: $text-color;
 }
 
 .upload-hint {
-  font-size: 10px;
-  color: #666;
+  font-size: 14px;
+  color: $text-color-light;
 }
 
 .file-name {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #333;
-  text-align: center;
-  word-break: break-all;
+  margin-top: 10px;
+  font-size: 14px;
+  color: $text-color;
 }
 
+// Error and Success Messages
 .error-message {
   color: #dc3545;
   font-size: 14px;
-  margin-top: 8px;
   text-align: center;
+  margin-top: 10px;
 }
 
 .success-message {
   color: #28a745;
   font-size: 14px;
-  margin-top: 8px;
   text-align: center;
+  margin-top: 10px;
+}
+
+// Cancel Button
+.cancel-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: $button-padding;
+  border: none;
+  border-radius: $button-radius;
+  font-size: $button-font-size;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $button-transition;
+  background-color: $secondary-color;
+  color: $text-color;
+  width: auto;
+  min-width: 100px;
+
+  &:hover {
+    background-color: darken($secondary-color, 5%);
+  }
 }
 
 .modal-actions {
@@ -183,62 +251,50 @@ $text-color: #333;
   box-shadow: none;
 }
 
-.cancel-button {
-  width: 100%;
-  padding: 10px 20px;
-  background-color: white;
-  color: #2196F3;
-  border: 1px solid #2196F3;
-  border-radius: 1000px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.cancel-button:hover {
-  background-color: #f5f5f5;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-}
-
 .import-info {
-  margin-top: 10px;
-  padding: 12px;
-  background-color: #fafafa;
-  border-radius: 16px;
-  font-size: 10px;
-  line-height: 1.2;
-  color: #666;
-}
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #495057;
 
-.import-info h3 {
-  margin: 0 0 4px 0;
-  font-size: 11px;
-  font-weight: 600;
-  color: #444;
-}
+  h3 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #212529;
+  }
 
-.import-info h4 {
-  margin: 8px 0 4px 0;
-  font-size: 10px;
-  font-weight: 600;
-  color: #444;
-}
+  ol {
+    margin: 0;
+    padding-left: 20px;
 
-.import-info ol {
-  margin: 0;
-  padding-left: 12px;
-}
+    li {
+      margin-bottom: 8px;
 
-.import-info li {
-  margin-bottom: 2px;
-}
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-.import-info p {
-  margin: 4px 0 0 0;
-  font-style: italic;
-  color: #777;
-  font-size: 9px;
+      ul {
+        margin: 8px 0 0 0;
+        padding-left: 20px;
+        list-style-type: disc;
+
+        li {
+          margin-bottom: 4px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  p {
+    margin: 12px 0 0 0;
+    font-style: italic;
+    color: #6c757d;
+    font-size: 12px;
+  }
 } 

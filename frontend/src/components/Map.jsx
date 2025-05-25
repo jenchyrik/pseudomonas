@@ -14,6 +14,7 @@ import 'leaflet.markercluster';
 import * as XLSX from 'xlsx';
 import AddDataSelectionModal from './AddDataSelectionModal';
 import ImportTableModal from './ImportTableModal';
+import FilterModal from './FilterModal';
 
 // Исправляем проблему с иконками маркеров
 let DefaultIcon = L.icon({
@@ -37,6 +38,7 @@ const Map = ({ user }) => {
   const [isAddStrainModalOpen, setIsAddStrainModalOpen] = useState(false);
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
   const [isImportTableModalOpen, setIsImportTableModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     dateRange: { start: null, end: null },
     strainName: '',
@@ -536,9 +538,43 @@ const Map = ({ user }) => {
         </button>
       )}
 
+      <button 
+        className="filter-button"
+        onClick={() => {
+          if (window.innerWidth <= 1000) {
+            setIsFilterModalOpen(true);
+          }
+        }}
+      >
+        <svg
+          className="download-icon"
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+        >
+          <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" fill="currentColor" />
+        </svg>
+        Фильтры
+      </button>
+
+      <button 
+        className="download-table-button"
+        onClick={handleExportToExcel}
+      >
+        <svg
+          className="download-icon"
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+        >
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />
+        </svg>
+        Скачать таблицу
+      </button>
+
       <aside className="map-control-panel">
         <header className="panel-header">
-          <h2 className="system-title">ГИС по P.aeruginosa</h2>
+          <h2 className="system-title">ГИС по Pseudomonas aeruginosa</h2>
         </header>
 
         <div className="panel-content">
@@ -706,6 +742,14 @@ const Map = ({ user }) => {
         isOpen={isSaveModalOpen}
         onClose={() => setIsSaveModalOpen(false)}
         mapInstance={mapInstanceRef.current}
+      />
+
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onDateRangeSelect={handleDateRangeSelect}
       />
 
       <AddDataSelectionModal

@@ -337,91 +337,65 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
-      <dialog 
-        className="modal" 
-        open={open} 
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="import-modal-title"
-      >
-        <form className="import-container" onSubmit={(e) => { e.preventDefault(); handleImport(); }}>
-          <h2 id="import-modal-title" className="import-title">Импорт таблицы</h2>
+      <div className="modal">
+        <div className="import-container">
+          <h2 className="import-title">Импорт данных</h2>
           
           <div className="import-content">
             <div className="file-upload">
               <input
-                id="file-input"
                 type="file"
+                id="file-input"
+                className="file-input"
                 accept=".xlsx,.xls"
                 onChange={handleFileChange}
-                className="file-input"
-                aria-label="Выберите файл Excel для импорта"
               />
               <label htmlFor="file-input" className="file-input-label">
                 <div className="upload-icon">📁</div>
-                <div className="upload-text">Выберите файл</div>
-                <div className="upload-hint">или перетащите файл сюда</div>
+                <div className="upload-text">Выберите файл Excel</div>
+                <div className="upload-hint">или перетащите его сюда</div>
               </label>
-              {file && (
-                <p className="file-name" aria-live="polite">
-                  Выбран файл: {file.name}
-                </p>
-              )}
+              {file && <div className="file-name">{file.name}</div>}
             </div>
 
-            {error && (
-              <div className="error-message" role="alert" aria-live="assertive">
-                {error}
-              </div>
-            )}
-            
-            {success && (
-              <div className="success-message" role="status" aria-live="polite">
-                {success}
-              </div>
-            )}
+            <div className="import-info">
+              <h3>Инструкция по импорту:</h3>
+              <ol>
+                <li>Подготовьте Excel файл (.xlsx или .xls) со следующими обязательными столбцами:
+                  <ul>
+                    <li>Название штамма</li>
+                    <li>Дата (в формате ДД.ММ.ГГГГ)</li>
+                    <li>Широта</li>
+                    <li>Долгота</li>
+                  </ul>
+                </li>
+                <li>Дополнительные столбцы (необязательные):
+                  <ul>
+                    <li>CRISPR тип</li>
+                    <li>Indel генотип</li>
+                    <li>Серогруппа</li>
+                    <li>Тип жгутикового антигена</li>
+                    <li>Мукоидный фенотип</li>
+                    <li>ExoS</li>
+                    <li>ExoU</li>
+                    <li>Объект выделения</li>
+                  </ul>
+                </li>
+                <li>Загрузите файл, нажав на кнопку выше или перетащив его в область загрузки</li>
+                <li>Система автоматически проверит данные на корректность и наличие дубликатов</li>
+              </ol>
+              <p>Примечание: Все даты должны быть в формате ДД.ММ.ГГГГ. Координаты должны быть указаны в десятичном формате.</p>
+            </div>
+
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
           </div>
 
-          <section className="import-info" aria-label="Информация о формате таблицы">
-            <h3>Поддерживаемые форматы: .xlsx, .xls</h3>
-            <h4>Структура таблицы (порядок столбцов):</h4>
-            <ol>
-              <li>Название штамма</li>
-              <li>CRISPR тип</li>
-              <li>Indel генотип</li>
-              <li>Серогруппа</li>
-              <li>Тип жгутикового антигена</li>
-              <li>Мукоидный фенотип</li>
-              <li>ExoS</li>
-              <li>ExoU</li>
-              <li>Дата (в формате ДД.ММ.ГГГГ)</li>
-              <li>Объект выделения</li>
-              <li>Широта</li>
-              <li>Долгота</li>
-            </ol>
-            <p>Примечание: для пустых ячеек используйте прочерк (-)</p>
-          </section>
-
-          <div className="modal-actions">
-            <button
-              type="submit"
-              className="import-button"
-              disabled={!file || loading}
-              aria-busy={loading}
-            >
-              {loading ? 'Импорт...' : 'Импортировать'}
-            </button>
-            <button
-              type="button"
-              className="cancel-button"
-              onClick={handleClose}
-              aria-label="Отменить импорт"
-            >
-              Отмена
-            </button>
-          </div>
-        </form>
-      </dialog>
+          <button className="cancel-button" onClick={onClose}>
+            Отмена
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

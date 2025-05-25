@@ -162,7 +162,7 @@ export default function PointsManagement() {
             <tr>
               <th>ID</th>
               <th>Штамм</th>
-              <th>Дата</th>
+              <th>Дата внесения</th>
               <th>Автор</th>
               <th>Действия</th>
             </tr>
@@ -172,7 +172,7 @@ export default function PointsManagement() {
               <tr key={point.id}>
                 <td>{point.id}</td>
                 <td>{point.strainName}</td>
-                <td>{new Date(point.date).toLocaleDateString()}</td>
+                <td>{new Date(point.createdAt).toLocaleDateString()}</td>
                 <td>{point.createdBy}</td>
                 <td>
                   <button

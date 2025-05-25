@@ -22,8 +22,8 @@ $button-gradient-end: #565e5e;
 $button-hover-start: #778586;
 $button-hover-end: #667272;
 
-$close-button-bg: #f8f9fa;
-$close-button-hover: #e9ecef;
+$cancel-button-bg: #f8f9fa;
+$cancel-button-hover: #e9ecef;
 
 // Modal Overlay
 .modal-overlay {
@@ -54,7 +54,9 @@ $close-button-hover: #e9ecef;
   display: flex;
   flex-direction: column;
   gap: $selection-gap;
-  padding-bottom: $selection-padding-bottom;
+  position: relative;
+  padding-bottom: 0;
+  min-height: 200px;
 }
 
 // Selection Title
@@ -71,6 +73,7 @@ $close-button-hover: #e9ecef;
   display: flex;
   gap: 12px;
   width: 100%;
+  margin-bottom: 60px;
 }
 
 // Selection Button
@@ -98,11 +101,11 @@ $close-button-hover: #e9ecef;
   }
 }
 
-// Close Button
-.close-button {
+// Cancel Button
+.cancel-button {
   position: absolute;
-  bottom: $modal-padding;
-  right: $modal-padding;
+  bottom: 0;
+  right: 0;
   padding: $button-padding;
   border: none;
   border-radius: $button-radius;
@@ -110,10 +113,12 @@ $close-button-hover: #e9ecef;
   font-weight: 500;
   cursor: pointer;
   transition: $button-transition;
-  background-color: $close-button-bg;
+  background-color: $cancel-button-bg;
   color: $title-color;
+  width: auto;
+  min-width: 100px;
 
   &:hover {
-    background-color: $close-button-hover;
+    background-color: $cancel-button-hover;
   }
 } 
