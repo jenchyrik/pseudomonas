@@ -11,10 +11,10 @@ import AddStrainModal from './AddStrainModal';
 import axios from 'axios';
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
 import 'leaflet.markercluster';
-import * as XLSX from 'xlsx';
 import AddDataSelectionModal from './AddDataSelectionModal';
 import ImportTableModal from './ImportTableModal';
 import FilterModal from './FilterModal';
+import ExcelJS from 'exceljs';
 
 // Исправляем проблему с иконками маркеров
 let DefaultIcon = L.icon({
@@ -451,7 +451,7 @@ const Map = ({ user }) => {
     }
   }, []);
 
-  const handleExportToExcel = () => {
+  const handleExportToExcel = async () => {
     // Подготавливаем данные для экспорта
     const exportData = filteredPoints.map(point => ({
       'Название штамма': point.strainName,
@@ -469,34 +469,39 @@ const Map = ({ user }) => {
     }));
 
     // Создаем рабочую книгу Excel
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(exportData);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Точки');
+
+    // Добавляем заголовки
+    const headers = Object.keys(exportData[0]);
+    worksheet.addRow(headers);
+
+    // Устанавливаем стили для заголовков
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+    // Добавляем данные
+    exportData.forEach(row => {
+      worksheet.addRow(Object.values(row));
+    });
 
     // Устанавливаем ширину столбцов
-    const colWidths = [
-      { wch: 20 }, // Название штамма
-      { wch: 15 }, // CRISPR тип
-      { wch: 15 }, // Indel генотип
-      { wch: 15 }, // Серогруппа
-      { wch: 20 }, // Тип жгутикового антигена
-      { wch: 20 }, // Мукоидный фенотип
-      { wch: 10 }, // ExoS
-      { wch: 10 }, // ExoU
-      { wch: 15 }, // Дата выделения
-      { wch: 20 }, // Объект выделения
-      { wch: 12 }, // Широта
-      { wch: 12 }  // Долгота
-    ];
-    ws['!cols'] = colWidths;
-
-    // Добавляем лист в книгу
-    XLSX.utils.book_append_sheet(wb, ws, 'Точки');
+    worksheet.columns.forEach(column => {
+      column.width = 15;
+    });
 
     // Генерируем имя файла с текущей датой
     const fileName = `points_export_${new Date().toISOString().split('T')[0]}.xlsx`;
 
     // Сохраняем файл
-    XLSX.writeFile(wb, fileName);
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const handleAddDataClick = () => {
