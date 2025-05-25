@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ImportTableModal.scss';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import axios from 'axios';
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
@@ -174,163 +174,174 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
     setLoading(true);
     setError(null);
 
-    const reader = new FileReader();
+    try {
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(await file.arrayBuffer());
+      
+      const worksheet = workbook.getWorksheet(1);
+      if (!worksheet) {
+        throw new Error('Файл не содержит данных');
+      }
 
-    reader.onload = async (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json<ImportedRow>(worksheet);
+      // Получаем заголовки из первой строки
+      const headers = worksheet.getRow(1).values as string[];
+      if (!headers || headers.length === 0) {
+        throw new Error('Файл не содержит заголовков');
+      }
 
-        console.log('Imported Excel data:', jsonData);
+      // Преобразуем заголовки в нижний регистр для сравнения
+      const normalizedHeaders = headers.map(h => h?.toString().toLowerCase() || '');
 
-        if (jsonData.length === 0) {
-          throw new Error('Файл не содержит данных');
-        }
+      // Проверяем наличие обязательных полей
+      const dateColumnNames = ['дата', 'date', 'дата выделения'];
+      const dateFieldIndex = normalizedHeaders.findIndex(h => dateColumnNames.includes(h));
+      
+      if (dateFieldIndex === -1) {
+        throw new Error(`В таблице отсутствует столбец с датой. Возможные названия: ${dateColumnNames.join(', ')}`);
+      }
 
-        // Выводим все доступные поля из первой строки для отладки
-        console.log('Available fields:', Object.keys(jsonData[0]));
+      const requiredFields = ['название штамма', 'широта', 'долгота'];
+      const missingFields = requiredFields.filter(field => 
+        !normalizedHeaders.includes(field)
+      );
+      
+      if (missingFields.length > 0) {
+        throw new Error(`В таблице отсутствуют обязательные поля: ${missingFields.join(', ')}`);
+      }
 
-        // Проверяем наличие обязательных полей с учетом возможных вариантов названий
-        const dateColumnNames = ['Дата', 'дата', 'ДАТА', 'Date', 'date', 'DATE', 'Дата выделения', 'дата выделения'];
-        const dateField = Object.keys(jsonData[0]).find(key => dateColumnNames.includes(key));
+      // Получаем существующие точки для проверки дубликатов
+      const existingPointsResponse = await fetch(getApiUrl('/points'), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const existingPoints = await existingPointsResponse.json() as Point[];
 
-        if (!dateField) {
-          throw new Error(`В таблице отсутствует столбец с датой. Возможные названия: ${dateColumnNames.join(', ')}`);
-        }
-
-        // Проверяем остальные обязательные поля
-        const requiredFields = ['Название штамма', 'Широта', 'Долгота'];
-        const missingFields = requiredFields.filter(field => !jsonData[0].hasOwnProperty(field));
-        
-        if (missingFields.length > 0) {
-          throw new Error(`В таблице отсутствуют обязательные поля: ${missingFields.join(', ')}`);
-        }
-
-        // Получаем существующие точки для проверки дубликатов
-        const existingPointsResponse = await fetch(getApiUrl('/points'), {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+      // Функция проверки дубликатов
+      const isDuplicate = (newPoint: Point, pointsToCheck: Point[]) => {
+        return pointsToCheck.some(point => {
+          const existingDate = new Date(point.date).toISOString().split('T')[0];
+          const newDate = new Date(newPoint.date).toISOString().split('T')[0];
+          
+          return point.strainName === newPoint.strainName &&
+                 Math.abs(point.latitude - newPoint.latitude) < 0.000001 &&
+                 Math.abs(point.longitude - newPoint.longitude) < 0.000001 &&
+                 existingDate === newDate;
         });
-        const existingPoints = await existingPointsResponse.json() as Point[];
+      };
 
-        // Функция проверки дубликатов
-        const isDuplicate = (newPoint: Point, pointsToCheck: Point[]) => {
-          return pointsToCheck.some(point => {
-            const existingDate = new Date(point.date).toISOString().split('T')[0];
-            const newDate = new Date(newPoint.date).toISOString().split('T')[0];
-            
-            return point.strainName === newPoint.strainName &&
-                   Math.abs(point.latitude - newPoint.latitude) < 0.000001 &&
-                   Math.abs(point.longitude - newPoint.longitude) < 0.000001 &&
-                   existingDate === newDate;
+      // Преобразуем данные в нужный формат и проверяем на дубликаты
+      const processedPoints: Point[] = [];
+      const duplicates: Point[] = [];
+      const internalDuplicates: Point[] = [];
+
+      // Начинаем со второй строки (пропускаем заголовки)
+      for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+        const row = worksheet.getRow(rowNumber);
+        if (!row || !row.values) continue;
+
+        try {
+          const rowData: { [key: string]: any } = {};
+          headers.forEach((header, index) => {
+            if (header) {
+              rowData[header] = row.getCell(index).value;
+            }
           });
-        };
 
-        // Преобразуем данные в нужный формат и проверяем на дубликаты
-        const processedPoints: Point[] = [];
-        const duplicates: Point[] = [];
-        const internalDuplicates: Point[] = [];
+          const dateValue = rowData[headers[dateFieldIndex]];
+          const parsedDate = parseDate(dateValue);
+          
+          const point: Point = {
+            strainName: rowData['Название штамма']?.toString() || '',
+            crisprType: rowData['CRISPR тип']?.toString() || '',
+            indelGenotype: rowData['Indel генотип']?.toString() || '',
+            serogroup: rowData['Серогруппа']?.toString() || '',
+            flagellarAntigen: rowData['Тип жгутикового антигена']?.toString() || '',
+            mucoidPhenotype: rowData['Мукоидный фенотип']?.toString() || '',
+            exoS: rowData['ExoS']?.toString() || '',
+            exoU: rowData['ExoU']?.toString() || '',
+            date: parsedDate,
+            isolationObject: rowData['Объект выделения']?.toString() || '',
+            latitude: typeof rowData['Широта'] === 'string' ? parseFloat(rowData['Широта']) : Number(rowData['Широта']),
+            longitude: typeof rowData['Долгота'] === 'string' ? parseFloat(rowData['Долгота']) : Number(rowData['Долгота']),
+            createdAt: new Date().toISOString(),
+            createdBy: localStorage.getItem('userEmail') || 'unknown'
+          };
 
-        for (const row of jsonData) {
-          try {
-            const dateValue = row[dateField];
-            console.log('Processing date value:', dateValue, 'from field:', dateField);
-            
-            const parsedDate = parseDate(dateValue);
-            if (!parsedDate) {
-              throw new Error('Неверный формат даты');
-            }
-
-            const point: Point = {
-              strainName: row['Название штамма'],
-              crisprType: row['CRISPR тип'] || '',
-              indelGenotype: row['Indel генотип'] || '',
-              serogroup: row['Серогруппа'] || '',
-              flagellarAntigen: row['Тип жгутикового антигена'] || '',
-              mucoidPhenotype: row['Мукоидный фенотип'] || '',
-              exoS: row['ExoS'] || '',
-              exoU: row['ExoU'] || '',
-              date: parsedDate,
-              isolationObject: row['Объект выделения'] || '',
-              latitude: typeof row['Широта'] === 'string' ? parseFloat(row['Широта']) : row['Широта'],
-              longitude: typeof row['Долгота'] === 'string' ? parseFloat(row['Долгота']) : row['Долгота'],
-              createdAt: new Date().toISOString(),
-              createdBy: localStorage.getItem('userEmail') || 'unknown'
-            };
-
-            // Проверяем на дубликат с существующими точками
-            if (isDuplicate(point, existingPoints)) {
-              duplicates.push(point);
-              continue;
-            }
-
-            // Проверяем на дубликат внутри загружаемой таблицы
-            if (isDuplicate(point, processedPoints)) {
-              internalDuplicates.push(point);
-              continue;
-            }
-
-            processedPoints.push(point);
-          } catch (error) {
-            console.error('Error processing row:', row, error);
-            throw new Error(`Ошибка в строке данных: ${error.message}`);
+          // Проверяем на дубликат с существующими точками
+          if (isDuplicate(point, existingPoints)) {
+            duplicates.push(point);
+            continue;
           }
-        }
 
-        // Если есть дубликаты, показываем предупреждение
-        if (duplicates.length > 0 || internalDuplicates.length > 0) {
-          let errorMessage = '';
-          if (duplicates.length > 0) {
-            errorMessage += `Найдено ${duplicates.length} дубликатов с существующими данными:\n`;
-            duplicates.forEach(point => {
-              errorMessage += `- Штамм ${point.strainName} с координатами (${point.latitude}, ${point.longitude}) и датой ${new Date(point.date).toLocaleDateString()}\n`;
-            });
+          // Проверяем на дубликат внутри загружаемой таблицы
+          if (isDuplicate(point, processedPoints)) {
+            internalDuplicates.push(point);
+            continue;
           }
-          if (internalDuplicates.length > 0) {
-            errorMessage += `\nНайдено ${internalDuplicates.length} дубликатов внутри загружаемой таблицы:\n`;
-            internalDuplicates.forEach(point => {
-              errorMessage += `- Штамм ${point.strainName} с координатами (${point.latitude}, ${point.longitude}) и датой ${new Date(point.date).toLocaleDateString()}\n`;
-            });
-          }
-          setError(errorMessage);
-          return;
+
+          processedPoints.push(point);
+        } catch (error) {
+          console.error('Error processing row:', rowNumber, error);
+          throw new Error(`Ошибка в строке ${rowNumber}: ${error.message}`);
         }
+      }
 
-        if (processedPoints.length === 0) {
-          setError('Нет новых данных для импорта');
-          return;
+      // Если есть дубликаты, показываем предупреждение
+      if (duplicates.length > 0 || internalDuplicates.length > 0) {
+        let errorMessage = '';
+        if (duplicates.length > 0) {
+          errorMessage += `Найдено ${duplicates.length} дубликатов с существующими данными:\n`;
+          duplicates.forEach(point => {
+            errorMessage += `- Штамм ${point.strainName} с координатами (${point.latitude}, ${point.longitude}) и датой ${new Date(point.date).toLocaleDateString()}\n`;
+          });
         }
-
-        console.log('Processed points:', processedPoints);
-
-        // Отправляем данные на сервер
-        const token = localStorage.getItem('token');
-        const response = await fetch(getApiUrl('/points/import'), {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ points: processedPoints }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Ошибка при импорте данных');
+        if (internalDuplicates.length > 0) {
+          errorMessage += `\nНайдено ${internalDuplicates.length} дубликатов внутри загружаемой таблицы:\n`;
+          internalDuplicates.forEach(point => {
+            errorMessage += `- Штамм ${point.strainName} с координатами (${point.latitude}, ${point.longitude}) и датой ${new Date(point.date).toLocaleDateString()}\n`;
+          });
         }
+        setError(errorMessage);
+        setLoading(false);
+        return;
+      }
 
+      if (processedPoints.length === 0) {
+        setError('Нет новых данных для импорта');
+        setLoading(false);
+        return;
+      }
+
+      // Отправляем данные на сервер
+      const token = localStorage.getItem('token');
+      const response = await fetch(getApiUrl('/points/import'), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ points: processedPoints }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка при импорте данных');
+      }
+
+      setSuccess(`Успешно импортировано ${processedPoints.length} записей`);
+      setLoading(false);
+      
+      // Добавляем небольшую задержку перед закрытием, чтобы пользователь увидел сообщение
+      setTimeout(() => {
         onImportSuccess?.();
         onClose();
-      } catch (error) {
-        console.error('Error importing data:', error);
-        setError(error.message);
-      }
-    };
-
-    reader.readAsArrayBuffer(file);
+      }, 2000);
+    } catch (error) {
+      console.error('Error importing data:', error);
+      setError(error.message);
+      setLoading(false);
+    }
   };
 
   if (!open) return null;
@@ -391,9 +402,18 @@ const ImportTableModal: React.FC<ImportTableModalProps> = ({ open, onClose, onIm
             {success && <div className="success-message">{success}</div>}
           </div>
 
-          <button className="cancel-button" onClick={onClose}>
-            Отмена
-          </button>
+          <div className="modal-actions">
+            <button 
+              className="import-button" 
+              onClick={handleImport}
+              disabled={!file || loading}
+            >
+              {loading ? 'Импорт...' : 'Импорт'}
+            </button>
+            <button className="cancel-button" onClick={onClose}>
+              Отмена
+            </button>
+          </div>
         </div>
       </div>
     </div>
