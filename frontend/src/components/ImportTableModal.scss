@@ -46,19 +46,20 @@ $button-transition: all 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 // Modal
 .modal {
   background: $modal-bg;
   padding: $modal-padding;
-  border-radius: 16px;
+  border-radius: $modal-radius;
   box-shadow: $modal-shadow;
   width: 500px;
   max-height: 90vh;
   position: relative;
   border: none;
+  z-index: 10000;
 }
 
 .close-button {
@@ -212,7 +213,7 @@ $button-transition: all 0.2s ease;
   min-width: 100px;
 
   &:hover {
-    background-color: darken($secondary-color, 5%);
+    background-color: color.adjust($secondary-color, $lightness: -5%);
   }
 }
 

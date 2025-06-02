@@ -55,25 +55,25 @@ $cancel-button-hover: #e9ecef;
   flex-direction: column;
   gap: $selection-gap;
   position: relative;
-  padding-bottom: 0;
+  padding-bottom: 60px;
   min-height: 200px;
 }
 
 // Selection Title
 .selection-title {
-  font-size: $title-size;
+  font-size: 24px;
   font-weight: 600;
-  color: $title-color;
-  margin: 0;
+  color: #333;
+  margin: 0 0 20px 0;
   text-align: center;
 }
 
 // Selection Buttons
 .selection-buttons {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  width: 100%;
-  margin-bottom: 60px;
+  margin-bottom: 20px;
 }
 
 // Selection Button
@@ -120,5 +120,22 @@ $cancel-button-hover: #e9ecef;
 
   &:hover {
     background-color: $cancel-button-hover;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .selection-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .selection-button,
+  .cancel-button {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+
+  .selection-buttons {
+    gap: 8px;
   }
 } 
