@@ -17,9 +17,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "@/*": ["src/*"]
-    },
     "moduleResolution": "node"
   },
   "include": ["src/**/*"],
