@@ -10,7 +10,7 @@ export function render(url) {
       null,
       React.createElement(
         StaticRouter,
-        { location: url },
+        { location: url, basename: '/' },
         React.createElement(App, null)
       )
     )

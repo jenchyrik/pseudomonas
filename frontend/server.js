@@ -41,14 +41,16 @@ async function createServer() {
       // Send rendered HTML
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
+      // If an error is caught, let Vite fix the stack trace
       vite.ssrFixStacktrace(e)
-      console.error(e)
+      console.error(e.stack)
       res.status(500).end(e.message)
     }
   })
 
-  app.listen(5000, () => {
-    console.log('Server running at http://localhost:5000')
+  const port = process.env.PORT || 5000
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`)
   })
 }
 
